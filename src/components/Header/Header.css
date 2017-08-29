@@ -1,0 +1,13 @@
+.header {
+    background-color: #1C6E8C !important;
+    text-align: center;
+}
+
+.title {
+    color: white;
+}
+
+.normalize-link {
+    text-decoration: none;
+    cursor: pointer;
+}
