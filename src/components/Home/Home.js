@@ -28,8 +28,10 @@ export default class Home extends Component {
             method: 'get',
             url: '/api/getUpcomingPosts'
         });
-        const posts = res.data.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
-        this.setState({ posts, filterPosts: posts });
+        if (res.data[0]) {
+            const posts = res.data.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+            this.setState({ posts, filterPosts: posts });
+        } else this.setState({ posts: [], filterPosts: [] });
     }
     toggleDrawer(open, anchorEl) {
         this.setState({ open, anchorEl });

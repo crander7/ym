@@ -6,6 +6,7 @@ const dbConfig = {
     database: config.database,
     host: config.host,
     port: config.port,
+    password: config.password,
     max: 20,
     min: 4
 };
@@ -20,7 +21,7 @@ const getUpcomingPosts = () => new Promise(async (resolve, reject) => {
     let client = null;
     try {
         client = await pool.connect();
-        const res = await client.query('SELECT * FROM post WHERE start_date >= NOW();');
+        const res = await client.query("SELECT * FROM post WHERE start_date >= now() - INTERVAL '1 day'"); // eslint-disable-line
         client.release();
         resolve(res.rows);
     } catch (e) {
@@ -60,7 +61,6 @@ const deletePost = id => new Promise(async (resolve, reject) => {
 
 const addPost = data => new Promise(async (resolve, reject) => {
     let client = null;
-    console.log('db', data);
     try {
         client = await pool.connect();
         const res = await client.query(`INSERT INTO post (title, body, activity, party, start_date, start_time) VALUES ($$${data.title}$$, $$${data.body}$$, $$${data.activity}$$, $$${data.party}$$, '${data.launch}', $$${data.time}$$);`);

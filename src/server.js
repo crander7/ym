@@ -8,12 +8,12 @@ const app = express();
 app.use(express.static('./build'));
 
 app.use(cors());
-// tell the app to parse HTTP body messages
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/api', apiRoutes);
 
-app.listen(3001, () => {
-    console.log('API listening on port 3001');
+app.listen(3020, () => {
+    console.log('API listening on port 3020');
 });

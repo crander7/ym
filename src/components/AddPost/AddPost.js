@@ -94,7 +94,6 @@ export default class AddPost extends Component {
         this.setState({ open, anchorEl });
     }
     handleTimeChange(e, value) {
-        console.log(e, value);
         let hour = value.getHours();
         let minute = value.getMinutes();
         if (minute < 10) minute = `0${minute}`;
