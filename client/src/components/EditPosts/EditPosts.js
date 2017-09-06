@@ -201,7 +201,8 @@ export default class EditPosts extends Component {
                 {this.state.authorized && <RaisedButton
                     onClick={this.handleOldRequest}
                     label="Toggle Old/Upcoming Posts"
-                    secondary={true}
+                    backgroundColor="#EF3026"
+                    labelColor="white"
                     style={{
                         width: '260px',
                         margin: '15px 50px'

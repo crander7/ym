@@ -70,31 +70,28 @@ export default class Posts extends Component {
                 {posts && posts.map((post, idx) => (
                     <Card
                         key={post.id}
-                        style={{
-                            marginBottom: '10px',
-                            padding: '20px 10px'
-                        }}
+                        className="mb10 card"
                     >
                         <div className="post-title">
                             <span className="act-title">{post.activity}:</span>
                             <span className="orig-title"> {post.title}</span>
                         </div>
-                        <div style={{ marginBottom: '10px' }}>
+                        <div className="mb10">
                             <span><b>{getDay(post.start_date)}, </b></span>
                             <span>{formatTimestamp(post.start_date)}</span>
                         </div>
                         {this.state.showDesc && this.state.descId === idx && <div>
                             <span>{post.party}</span>
                             {post.start_time && <span> meet @ {post.start_time}</span>}
-                            <p style={{ maxWidth: '300px', margin: 'auto', marginTop: '10px' }}>{post.body}</p>
+                            <p className="post-desc">{post.body}</p>
                         </div>}
                         <RaisedButton
-                            primary={true}
+                            backgroundColor="#4BC0EA"
+                            labelColor="white"
                             label={this.state.showDesc && this.state.descId === idx ? 'Show Less' : 'Show More'}
                             onClick={() => this.handlePostClick(idx)}
-                            style={{ marginTop: '10px' }}
+                            className="mt10"
                         />
-                        {/* idx !== posts.length - 1 && <hr style={{ width: '200px', marginTop: '20px' }} /> */}
                     </Card>
                 ))}
             </div>

@@ -30,7 +30,8 @@ export default class Protector extends Component {
                 />
                 <RaisedButton
                     label="Submit"
-                    primary={true}
+                    backgroundColor="#4BC0EA"
+                    labelColor="white"
                     onClick={() => this.props.check(this.state.password)}
                 />
                 <Link

@@ -21,7 +21,7 @@ const getUpcomingPosts = () => new Promise(async (resolve, reject) => {
     let client = null;
     try {
         client = await pool.connect();
-        const res = await client.query("SELECT * FROM post WHERE start_date >= now() - INTERVAL '1 day'"); // eslint-disable-line
+        const res = await client.query("SELECT * FROM post WHERE start_date >= now() - INTERVAL '1 day';"); // eslint-disable-line
         client.release();
         resolve(res.rows);
     } catch (e) {
@@ -35,7 +35,7 @@ const getArchivePosts = () => new Promise(async (resolve, reject) => {
     let client = null;
     try {
         client = await pool.connect();
-        const res = await client.query('SELECT * FROM post WHERE start_date < NOW();');
+        const res = await client.query("SELECT * FROM post WHERE start_date < now() - INTERVAL '1 day';"); // eslint-disable-line
         client.release();
         resolve(res.rows);
     } catch (e) {

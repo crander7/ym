@@ -235,7 +235,8 @@ export default class AddPost extends Component {
                     />
                     <RaisedButton
                         label="Submit"
-                        primary={true}
+                        backgroundColor="#4BC0EA"
+                        labelColor="white"
                         onClick={this.onSubmit}
                     />
                     <CheckBox

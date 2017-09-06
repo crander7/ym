@@ -1,15 +1,17 @@
-.remove-outline:focus {
-    outline: none;
-}
-
-.remove-outline {
-    cursor: pointer;
-    padding-bottom: 10px;
-}
-
-.posts-main {
-    width: 80vw;
-    margin: auto;
+@media only screen and (max-width: 768px) {
+    .remove-outline:focus {
+        outline: none;
+    }
+    
+    .remove-outline {
+        cursor: pointer;
+        padding-bottom: 10px;
+    }
+    
+    .posts-main {
+        width: 80vw;
+        margin: auto;
+    }
 }
 
 .post-title {
@@ -19,15 +21,32 @@
 .act-title {
     font-size: 25px;
     font-weight: bold;
-    color: #605856;
+    color: #575B61;
 }
 
 .orig-title {
     font-size: 25px;
-    color: #605856;
+    color: #575B61;
     font-weight: bold;
 }
 
-.hr-buff {
-    padding-bottom: 20px;
+.post-desc {
+    max-width: 350px;
+    margin: auto;
+    margin-top: 10px;
+}
+
+.mt10 {
+    margin-top: 10px;
+}
+
+.mb10 {
+    margin-bottom: 10px;
+}
+
+.card {
+    padding: 20px 10px;
+    max-width: 500px;
+    margin: auto;
+    margin-bottom: 10px;
 }
