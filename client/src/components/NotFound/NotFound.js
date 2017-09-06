@@ -15,12 +15,12 @@ export default function NotFound() {
         defStyle: {
             position: 'absolute',
             left: '5vw',
-            top: '35vh'
+            top: '3vh'
         },
         videoStyle: {
             position: 'fixed',
-            top: '50%',
-            left: '50%',
+            top: '75%',
+            left: '-50%',
             minWidth: '100%',
             minHeight: '100%',
             width: 'auto',
@@ -56,7 +56,7 @@ export default function NotFound() {
             </video>
             <div className="text-overlay" style={styles.defStyle}>
                 <h1 style={styles.titleStyle}>404</h1>
-                <h2 style={styles.subTitleStyle}>No es bueno.</h2>
+                <h2 style={styles.subTitleStyle}>Not Found</h2>
                 <p style={{ width: '250px' }}>
                     You came here, looking for something, and all you get is this silly running hot dog. Not good. Not good at all.
                 </p>

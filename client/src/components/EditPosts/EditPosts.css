@@ -1,3 +1,14 @@
+.filter-list > div > div {
+    color: gray;
+}
+
+.post-view {
+    text-align: center;
+}
+
+.home-drawer {
+    text-align: left;
+}
 .remove-outline:focus {
     outline: none;
 }
@@ -7,10 +18,11 @@
     padding-bottom: 10px;
 }
 
-.posts-main {
+.posts-edit {
     padding-top: 30px;
     width: 80vw;
     margin: auto;
+    
 }
 
 .post-title {
@@ -31,4 +43,12 @@
 
 .hr-buff {
     padding-bottom: 20px;
+}
+
+.actions {
+    display: table-cell;
+    position: relative;
+    left: 50px;
+    /* bottom: 7px; */
+    vertical-align: middle;
 }

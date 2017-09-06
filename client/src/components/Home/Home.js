@@ -1,9 +1,16 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import Drawer from 'material-ui/Drawer';
+import { Link } from 'react-router';
+import Add from 'material-ui/svg-icons/content/add-circle';
+import Tool from 'material-ui/svg-icons/action/build';
+import History from 'material-ui/svg-icons/action/history';
+import Filter from 'material-ui/svg-icons/content/filter-list';
+import Clear from 'material-ui/svg-icons/content/clear';
+import Edit from 'material-ui/svg-icons/image/edit';
 import { List, ListItem } from 'material-ui/List';
 import Header from './../Header/Header';
-import Posts from './components/Posts/Posts';
+import Posts from './../Posts/Posts';
 import data from './../AddPost/data';
 import './Home.css';
 
@@ -13,7 +20,6 @@ export default class Home extends Component {
         this.state = {
             posts: null,
             open: false,
-            filterOpen: false,
             filtered: false,
             anchorEl: null,
             filterPosts: null
@@ -21,7 +27,6 @@ export default class Home extends Component {
         this.toggleDrawer = this.toggleDrawer.bind(this);
         this.handleFilter = this.handleFilter.bind(this);
         this.handleRequestClose = this.handleRequestClose.bind(this);
-        this.handleFilterOpen = this.handleFilterOpen.bind(this);
     }
     async componentWillMount() {
         const res = await axios({
@@ -47,13 +52,11 @@ export default class Home extends Component {
     handleRequestClose() {
         this.setState({ open: false });
     }
-    handleFilterOpen() {
-        this.setState({ filterOpen: !this.state.filterOpen });
-    }
     render() {
         return (
             <div className="post-view">
                 <Header toggleDrawer={this.toggleDrawer} />
+                <h3>Upcoming Events</h3>
                 <Posts posts={this.state.filterPosts} />
                 <Drawer
                     className="home-drawer"
@@ -64,24 +67,65 @@ export default class Home extends Component {
                 >
                     <List>
                         <ListItem
+                            primaryText="Admin Tools"
+                            primaryTogglesNestedList={true}
+                            leftIcon={<Tool />}
+                            nestedItems={[
+                                <Link
+                                    to="/addPost"
+                                    className="normalize-link"
+                                    onClick={this.handleRequestClose}
+                                    key={0}
+                                >
+                                    <ListItem
+                                        primaryText="Add Posts"
+                                        style={{ paddingLeft: '16px' }}
+                                        leftIcon={<Add />}
+                                    />
+                                </Link>,
+                                <Link
+                                    to="/editPosts"
+                                    className="normalize-link"
+                                    onClick={this.handleRequestClose}
+                                    key={1}
+                                >
+                                    <ListItem
+                                        primaryText="Edit Posts"
+                                        style={{ paddingLeft: '16px' }}
+                                        leftIcon={<Edit />}
+                                    />
+                                </Link>
+                            ]}
+                        />
+                        <ListItem
                             primaryText="Filter Posts"
                             primaryTogglesNestedList={true}
-                            onClick={this.handleFilterOpen}
-                            open={this.state.filterOpen}
+                            leftIcon={<Filter />}
                             nestedItems={data.types && data.types.map(type => (
                                 <ListItem
                                     className="filter-list"
                                     primaryText={type}
                                     key={type}
-                                    onClick={(e) => { this.handleRequestClose(); this.setState({ filterOpen: false }); this.handleFilter(e); }}
+                                    onClick={(e) => { this.handleRequestClose(); this.handleFilter(e); }}
                                 />
                             ))}
                         />
                         <ListItem
                             primaryText="Clear Filter"
-                            onClick={() => { this.handleRequestClose(); this.setState({ filterOpen: false, filterPosts: this.state.posts, filtered: false }); }}
+                            onClick={() => { this.handleRequestClose(); this.setState({ filterPosts: this.state.posts, filtered: false }); }}
+                            leftIcon={<Clear />}
                             disabled={!this.state.filtered}
                         />
+                        <Link
+                            to="/pastActivities"
+                            className="normalize-link"
+                            onClick={this.handleRequestClose}
+                        >
+                            <ListItem
+                                primaryText="Past Posts"
+                                leftIcon={<History />}
+                            />
+                        </Link>
                     </List>
                 </Drawer>
             </div>

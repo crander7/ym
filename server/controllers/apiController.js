@@ -1,9 +1,5 @@
 const pgModel = require('./../db/pgModel');
 
-const test = async (req, res) => {
-    res.json({ success: 'It Works' }).status(200);
-};
-
 const getUpcomingPosts = async (req, res) => {
     try {
         const resp = await pgModel.getUpcomingPosts();
@@ -40,10 +36,39 @@ const deletePost = async (req, res) => {
     }
 };
 
+const checkPassword = async (req, res) => {
+    try {
+        await pgModel.getPassword(req.body.password);
+        res.json({ success: true }).status(200);
+    } catch (e) {
+        res.json({ success: false }).status(503);
+    }
+};
+
+const getPost = async (req, res) => {
+    try {
+        const resp = await pgModel.getPost(req.params.id);
+        res.json(resp).status(200);
+    } catch (e) {
+        res.json({ error: e }).status(404);
+    }
+};
+
+const updatePost = async (req, res) => {
+    try {
+        await pgModel.updatePost(req.body);
+        res.json({ success: true }).status(200);
+    } catch (e) {
+        res.json({ error: e }).status(404);
+    }
+};
+
 module.exports = {
-    test,
     addPost,
     getUpcomingPosts,
     getArchivePosts,
-    deletePost
+    deletePost,
+    checkPassword,
+    getPost,
+    updatePost
 };

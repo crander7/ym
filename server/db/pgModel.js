@@ -73,9 +73,55 @@ const addPost = data => new Promise(async (resolve, reject) => {
     }
 });
 
+const getPassword = pass => new Promise(async (resolve, reject) => {
+    let client = null;
+    try {
+        client = await pool.connect();
+        const res = await client.query(`SELECT passphrase FROM password WHERE passphrase = $$${pass}$$`);
+        client.release();
+        if (res.rows[0]) resolve();
+        else reject();
+    } catch (e) {
+        if (client) client.release();
+        const error = `db error in getPassword ${JSON.stringify(e)}`;
+        reject(error);
+    }
+});
+
+const getPost = id => new Promise(async (resolve, reject) => {
+    let client = null;
+    try {
+        client = await pool.connect();
+        const res = await client.query(`SELECT * FROM post WHERE id = ${id}`);
+        client.release();
+        resolve(res.rows);
+    } catch (e) {
+        if (client) client.release();
+        const error = `db error in getPost ${JSON.stringify(e)}`;
+        reject(error);
+    }
+});
+
+const updatePost = data => new Promise(async (resolve, reject) => {
+    let client = null;
+    try {
+        client = await pool.connect();
+        await client.query(`UPDATE post SET title = $$${data.title}$$, body = $$${data.body}$$, activity = $$${data.activity}$$, party = $$${data.party}$$, start_date = '${data.launch}', start_time = $$${data.time}$$ WHERE id = ${data.postId}`);
+        client.release();
+        resolve();
+    } catch (e) {
+        if (client) client.release();
+        const error = `db error in updatePost ${JSON.stringify(e)}`;
+        reject(error);
+    }
+});
+
 module.exports = {
     getUpcomingPosts,
     getArchivePosts,
     deletePost,
-    addPost
+    addPost,
+    getPassword,
+    getPost,
+    updatePost
 };

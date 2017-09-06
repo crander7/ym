@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { PropTypes } from 'prop-types';
+import RaisedButton from 'material-ui/RaisedButton';
+import Card from 'material-ui/Card';
 import './Posts.css';
 
 const options = {
@@ -66,12 +68,12 @@ export default class Posts extends Component {
         return (
             <div className="posts-main">
                 {posts && posts.map((post, idx) => (
-                    <div
-                        className="remove-outline"
-                        role="button"
-                        tabIndex="0"
+                    <Card
                         key={post.id}
-                        onClick={() => this.handlePostClick(idx)}
+                        style={{
+                            marginBottom: '10px',
+                            padding: '20px 10px'
+                        }}
                     >
                         <div className="post-title">
                             <span className="act-title">{post.activity}:</span>
@@ -81,13 +83,19 @@ export default class Posts extends Component {
                             <span><b>{getDay(post.start_date)}, </b></span>
                             <span>{formatTimestamp(post.start_date)}</span>
                         </div>
-                        <div>
+                        {this.state.showDesc && this.state.descId === idx && <div>
                             <span>{post.party}</span>
                             {post.start_time && <span> meet @ {post.start_time}</span>}
-                        </div>
-                        {this.state.showDesc && this.state.descId === idx && <p style={{ maxWidth: '300px', margin: 'auto', marginTop: '15px' }}>{post.body}</p>}
-                        {idx !== posts.length - 1 && <hr style={{ width: '200px', marginTop: '20px' }} />}
-                    </div>
+                            <p style={{ maxWidth: '300px', margin: 'auto', marginTop: '10px' }}>{post.body}</p>
+                        </div>}
+                        <RaisedButton
+                            primary={true}
+                            label={this.state.showDesc && this.state.descId === idx ? 'Show Less' : 'Show More'}
+                            onClick={() => this.handlePostClick(idx)}
+                            style={{ marginTop: '10px' }}
+                        />
+                        {/* idx !== posts.length - 1 && <hr style={{ width: '200px', marginTop: '20px' }} /> */}
+                    </Card>
                 ))}
             </div>
         );

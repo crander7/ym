@@ -4,6 +4,12 @@ import axios from 'axios';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import DatePicker from 'material-ui/DatePicker';
+// import AutoComplete from 'material-ui/AutoComplete';
+import CheckBox from 'material-ui/Checkbox';
+import Snackbar from 'material-ui/Snackbar';
+import Home from 'material-ui/svg-icons/action/home';
+import Edit from 'material-ui/svg-icons/image/edit';
+import History from 'material-ui/svg-icons/action/history';
 import TimePicker from 'material-ui/TimePicker';
 import RaisedButton from 'material-ui/RaisedButton';
 import areIntlLocalesSupported from 'intl-locales-supported';
@@ -11,6 +17,7 @@ import Drawer from 'material-ui/Drawer';
 import { Link } from 'react-router';
 import { List, ListItem } from 'material-ui/List';
 import Header from './../Header/Header';
+import Protector from './../Protector/Protector';
 import data from './data';
 import './AddPost.css';
 
@@ -47,7 +54,12 @@ export default class AddPost extends Component {
             launch: today,
             time: '',
             open: false,
-            anchorEl: null
+            anchorEl: null,
+            authorized: false,
+            addMore: false,
+            openSnack: false
+            // dataSource: ['Church', 'Brother Andersen\'s House', 'Hillcrest Park'],
+            // location: null
         };
         this.onSubmit = this.onSubmit.bind(this);
         this.handleGroupChange = this.handleGroupChange.bind(this);
@@ -57,23 +69,43 @@ export default class AddPost extends Component {
         this.handleDateChange = this.handleDateChange.bind(this);
         this.toggleDrawer = this.toggleDrawer.bind(this);
         this.handleTimeChange = this.handleTimeChange.bind(this);
+        this.checkAuth = this.checkAuth.bind(this);
+        this.handleCheckBox = this.handleCheckBox.bind(this);
+        this.handleRequestClose = this.handleRequestClose.bind(this);
+        this.handleUpdateInput = this.handleUpdateInput.bind(this);
     }
     async onSubmit() {
         const res = await axios({
             method: 'post',
-            url: 'api/addPost',
+            url: '/api/addPost',
             data: this.state
         });
-        if (res.data.success) {
+        if (res.data.success && this.state.addMore) {
             this.setState({
                 party: '',
                 activity: '',
                 title: '',
                 body: '',
                 launch: today,
-                time: ''
+                time: '',
+                openSnack: true
             });
+        } else if (res.data.success) location.pathname = '/';
+    }
+    async checkAuth(password) {
+        const res = await axios({
+            method: 'post',
+            url: 'api/auth',
+            data: { password }
+        });
+        if (res.data.success) this.setState({ authorized: true });
+        else {
+            const button = document.getElementById('hate-it');
+            button.click();
         }
+    }
+    handleCheckBox() {
+        this.setState({ addMore: !this.state.addMore });
     }
     handleGroupChange(e, idx, party) {
         this.setState({ party });
@@ -93,6 +125,14 @@ export default class AddPost extends Component {
     toggleDrawer(open, anchorEl) {
         this.setState({ open, anchorEl });
     }
+    handleRequestClose() {
+        this.setState({ openSnack: false });
+    }
+    handleUpdateInput(value) {
+        this.setState({
+            location: value
+        });
+    }
     handleTimeChange(e, value) {
         let hour = value.getHours();
         let minute = value.getMinutes();
@@ -111,7 +151,8 @@ export default class AddPost extends Component {
         return (
             <div>
                 <Header toggleDrawer={this.toggleDrawer} />
-                <div className="post-creator">
+                {!this.state.authorized && <Protector check={this.checkAuth} />}
+                {this.state.authorized && <div className="post-creator">
                     <div>
                         <div>
                             <TextField
@@ -129,6 +170,14 @@ export default class AddPost extends Component {
                                 onChange={this.handleDescChange}
                             />
                         </div>
+                        {/* <div>
+                            <AutoComplete
+                                hintText="Location"
+                                dataSource={this.state.dataSource}
+                                onUpdateInput={this.handleUpdateInput}
+                                filter={AutoComplete.caseInsensitiveFilter}
+                            />
+                        </div> */}
                     </div>
                     <div>
                         <label htmlFor="party" className="drop-label">
@@ -189,7 +238,18 @@ export default class AddPost extends Component {
                         primary={true}
                         onClick={this.onSubmit}
                     />
-                </div>
+                    <CheckBox
+                        label="Add More Posts"
+                        labelStyle={{ color: 'gray' }}
+                        onCheck={this.handleCheckBox}
+                        style={{
+                            position: 'absolute',
+                            width: '57%',
+                            right: '0px',
+                            bottom: '60px'
+                        }}
+                    />
+                </div>}
                 <Drawer
                     docked={false}
                     width={200}
@@ -202,17 +262,33 @@ export default class AddPost extends Component {
                             className="normalize-link"
                             onClick={this.handleRequestClose}
                         >
-                            <ListItem primaryText="Home" />
+                            <ListItem primaryText="Home" leftIcon={<Home />} />
                         </Link>
                         <Link
                             to="/editPosts"
                             className="normalize-link"
                             onClick={this.handleRequestClose}
                         >
-                            <ListItem primaryText="Edit Posts" />
+                            <ListItem primaryText="Edit Posts" leftIcon={<Edit />} />
+                        </Link>
+                        <Link
+                            to="/pastActivities"
+                            className="normalize-link"
+                            onClick={this.handleRequestClose}
+                        >
+                            <ListItem
+                                primaryText="Past Posts"
+                                leftIcon={<History />}
+                            />
                         </Link>
                     </List>
                 </Drawer>
+                <Snackbar
+                    open={this.state.openSnack}
+                    message="Post Successfully Added"
+                    autoHideDuration={3000}
+                    onRequestClose={this.handleRequestClose}
+                />
             </div>
         );
     }
