@@ -1,17 +1,17 @@
 const express = require('express');
 const apiCtrl = require('./../controllers/apiController');
+const authCheckMiddleware = require('./../middleware/auth-check');
 
 const router = new express.Router();
 
 router.get('/getUpcomingPosts', apiCtrl.getUpcomingPosts);
 router.get('/getArchivePosts', apiCtrl.getArchivePosts);
-router.get('/getPost/:id', apiCtrl.getPost);
+router.get('/getPost/:id', authCheckMiddleware, apiCtrl.getPost);
 
-router.post('/addPost', apiCtrl.addPost);
-router.post('/auth', apiCtrl.checkPassword);
+router.post('/addPost', authCheckMiddleware, apiCtrl.addPost);
 
-router.put('/updatePost', apiCtrl.updatePost);
+router.put('/updatePost', authCheckMiddleware, apiCtrl.updatePost);
 
-router.delete('/deletePost', apiCtrl.deletePost);
+router.delete('/deletePost', authCheckMiddleware, apiCtrl.deletePost);
 
 module.exports = router;

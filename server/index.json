@@ -5,5 +5,7 @@
         "port": 5432,
         "database": "ym",
         "password": ""
-    }
+    },
+    "port": "8086",
+    "jwtSecret": "supersecretsecret"
 }

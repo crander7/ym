@@ -20,8 +20,8 @@ import Clear from 'material-ui/svg-icons/content/clear';
 import { Link } from 'react-router';
 import axios from 'axios';
 import Header from './../Header/Header';
-import Protector from './../Protector/Protector';
 import data from './../AddPost/data';
+import Auth from './../../modules/auth';
 import './EditPosts.css';
 
 const options = {
@@ -45,7 +45,6 @@ export default class EditPosts extends Component {
             deleteCheck: false,
             postId: null,
             postIdx: null,
-            authorized: false,
             filteredPosts: null,
             filtered: false,
             openPopover: false,
@@ -60,42 +59,32 @@ export default class EditPosts extends Component {
         this.handleOpen = this.handleOpen.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handleRequestClose = this.handleRequestClose.bind(this);
-        this.checkAuth = this.checkAuth.bind(this);
         this.togglePopover = this.togglePopover.bind(this);
         this.handleOldRequest = this.handleOldRequest.bind(this);
     }
     async componentWillMount() {
         const res = await axios({
             method: 'get',
-            url: '/api/getUpcomingPosts'
+            url: '/api/getUpcomingPosts',
+            headers: { Authorization: `bearer ${Auth.getToken()}` }
         });
         const posts = res.data.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
         this.setState({ posts, filteredPosts: posts });
-    }
-    async checkAuth(password) {
-        const res = await axios({
-            method: 'post',
-            url: 'api/auth',
-            data: { password }
-        });
-        if (res.data.success) this.setState({ authorized: true });
-        else {
-            const button = document.getElementById('hate-it');
-            button.click();
-        }
     }
     async handleOldRequest() {
         if (this.state.old) {
             const res = await axios({
                 method: 'get',
-                url: '/api/getUpcomingPosts'
+                url: '/api/getUpcomingPosts',
+                headers: { Authorization: `bearer ${Auth.getToken()}` }
             });
             const posts = res.data.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
             this.setState({ posts, filteredPosts: posts, old: false });
         } else {
             const res = await axios({
                 method: 'get',
-                url: '/api/getArchivePosts'
+                url: '/api/getArchivePosts',
+                headers: { Authorization: `bearer ${Auth.getToken()}` }
             });
             const posts = res.data.sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
             this.setState({ posts, filteredPosts: posts, old: true });
@@ -129,6 +118,7 @@ export default class EditPosts extends Component {
         const res = await axios({
             method: 'delete',
             url: '/api/deletePost',
+            headers: { Authorization: `bearer ${Auth.getToken()}` },
             data: { id: postId }
         });
         if (res.data.success) {
@@ -153,9 +143,8 @@ export default class EditPosts extends Component {
         return (
             <div>
                 <Header toggleDrawer={this.toggleDrawer} />
-                {!this.state.authorized && <Protector check={this.checkAuth} />}
-                {this.state.authorized && <h3 style={{ textAlign: 'center' }}>{this.state.old ? 'Past Posts' : 'Upcoming Posts'}</h3>}
-                {this.state.authorized && <div className="posts-edit">
+                <h3 style={{ textAlign: 'center' }}>{this.state.old ? 'Past Posts' : 'Upcoming Posts'}</h3>
+                <div className="posts-edit">
                     {filteredPosts && filteredPosts.map((post, idx) => (
                         <Card key={post.id} style={{ marginBottom: '10px', padding: '20px 10px' }}>
                             <div style={{ display: 'table-cell', width: '50vw' }}>
@@ -197,8 +186,8 @@ export default class EditPosts extends Component {
                             </Popover>
                         </Card>
                     ))}
-                </div>}
-                {this.state.authorized && <RaisedButton
+                </div>
+                <RaisedButton
                     onClick={this.handleOldRequest}
                     label="Toggle Old/Upcoming Posts"
                     backgroundColor="#EF3026"
@@ -207,7 +196,7 @@ export default class EditPosts extends Component {
                         width: '260px',
                         margin: '15px 50px'
                     }}
-                />}
+                />
                 <Drawer
                     className="home-drawer"
                     docked={false}

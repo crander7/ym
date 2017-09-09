@@ -36,15 +36,6 @@ const deletePost = async (req, res) => {
     }
 };
 
-const checkPassword = async (req, res) => {
-    try {
-        await pgModel.getPassword(req.body.password);
-        res.json({ success: true }).status(200);
-    } catch (e) {
-        res.json({ success: false }).status(503);
-    }
-};
-
 const getPost = async (req, res) => {
     try {
         const resp = await pgModel.getPost(req.params.id);
@@ -68,7 +59,6 @@ module.exports = {
     getUpcomingPosts,
     getArchivePosts,
     deletePost,
-    checkPassword,
     getPost,
     updatePost
 };

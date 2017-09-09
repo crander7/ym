@@ -73,21 +73,6 @@ const addPost = data => new Promise(async (resolve, reject) => {
     }
 });
 
-const getPassword = pass => new Promise(async (resolve, reject) => {
-    let client = null;
-    try {
-        client = await pool.connect();
-        const res = await client.query(`SELECT passphrase FROM password WHERE passphrase = $$${pass}$$`);
-        client.release();
-        if (res.rows[0]) resolve();
-        else reject();
-    } catch (e) {
-        if (client) client.release();
-        const error = `db error in getPassword ${JSON.stringify(e)}`;
-        reject(error);
-    }
-});
-
 const getPost = id => new Promise(async (resolve, reject) => {
     let client = null;
     try {
@@ -116,12 +101,58 @@ const updatePost = data => new Promise(async (resolve, reject) => {
     }
 });
 
+const addUser = data => new Promise(async (resolve, reject) => {
+    let client = null;
+    try {
+        client = await pool.connect();
+        await client.query(`INSERT INTO users (first_name, last_name, email, password) VALUES ($$${data.firstName}$$, $$${data.lastName}$$, $$${data.email}$$, $$${data.password}$$);`);
+        client.release();
+        resolve();
+    } catch (e) {
+        if (client) client.release();
+        const error = `db error in addUser ${JSON.stringify(e)}`;
+        reject(error);
+    }
+});
+
+const getUserById = id => new Promise(async (resolve, reject) => {
+    let client = null;
+    try {
+        client = await pool.connect();
+        const res = await client.query(`SELECT * FROM users WHERE id = ${id}`);
+        client.release();
+        if (res.rows[0]) resolve(res.rows[0]);
+        else reject('No User Found');
+    } catch (e) {
+        if (client) client.release();
+        const error = `db error in getUserById ${JSON.stringify(e)}`;
+        reject(error);
+    }
+});
+
+const getUserByEmail = email => new Promise(async (resolve, reject) => {
+    let client = null;
+    try {
+        client = await pool.connect();
+        const res = await client.query(`SELECT * FROM users WHERE email = $$${email}$$`);
+        client.release();
+        if (res.rows[0]) resolve(res.rows[0]);
+        else reject('No User Found');
+    } catch (e) {
+        if (client) client.release();
+        const error = `db error in getUserByEmail ${JSON.stringify(e)}`;
+        reject(error);
+    }
+});
+
 module.exports = {
     getUpcomingPosts,
     getArchivePosts,
     deletePost,
     addPost,
-    getPassword,
     getPost,
-    updatePost
+    updatePost,
+    addUser,
+    getUserById,
+    getUserByEmail
 };

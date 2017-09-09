@@ -17,8 +17,8 @@ import Drawer from 'material-ui/Drawer';
 import { Link } from 'react-router';
 import { List, ListItem } from 'material-ui/List';
 import Header from './../Header/Header';
-import Protector from './../Protector/Protector';
 import data from './data';
+import Auth from './../../modules/auth';
 import './AddPost.css';
 
 const today = new Date();
@@ -55,7 +55,6 @@ export default class AddPost extends Component {
             time: '',
             open: false,
             anchorEl: null,
-            authorized: false,
             addMore: false,
             openSnack: false
             // dataSource: ['Church', 'Brother Andersen\'s House', 'Hillcrest Park'],
@@ -69,7 +68,6 @@ export default class AddPost extends Component {
         this.handleDateChange = this.handleDateChange.bind(this);
         this.toggleDrawer = this.toggleDrawer.bind(this);
         this.handleTimeChange = this.handleTimeChange.bind(this);
-        this.checkAuth = this.checkAuth.bind(this);
         this.handleCheckBox = this.handleCheckBox.bind(this);
         this.handleRequestClose = this.handleRequestClose.bind(this);
         this.handleUpdateInput = this.handleUpdateInput.bind(this);
@@ -78,6 +76,7 @@ export default class AddPost extends Component {
         const res = await axios({
             method: 'post',
             url: '/api/addPost',
+            headers: { Authorization: `bearer ${Auth.getToken()}` },
             data: this.state
         });
         if (res.data.success && this.state.addMore) {
@@ -91,18 +90,6 @@ export default class AddPost extends Component {
                 openSnack: true
             });
         } else if (res.data.success) location.pathname = '/';
-    }
-    async checkAuth(password) {
-        const res = await axios({
-            method: 'post',
-            url: 'api/auth',
-            data: { password }
-        });
-        if (res.data.success) this.setState({ authorized: true });
-        else {
-            const button = document.getElementById('hate-it');
-            button.click();
-        }
     }
     handleCheckBox() {
         this.setState({ addMore: !this.state.addMore });
@@ -151,8 +138,7 @@ export default class AddPost extends Component {
         return (
             <div>
                 <Header toggleDrawer={this.toggleDrawer} />
-                {!this.state.authorized && <Protector check={this.checkAuth} />}
-                {this.state.authorized && <div className="post-creator">
+                <div className="post-creator">
                     <div>
                         <div>
                             <TextField
@@ -250,7 +236,7 @@ export default class AddPost extends Component {
                             bottom: '60px'
                         }}
                     />
-                </div>}
+                </div>
                 <Drawer
                     docked={false}
                     width={200}

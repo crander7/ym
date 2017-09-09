@@ -16,7 +16,7 @@ import Drawer from 'material-ui/Drawer';
 import { Link } from 'react-router';
 import { List, ListItem } from 'material-ui/List';
 import Header from './../Header/Header';
-// import Protector from './../Protector/Protector';
+import Auth from './../../modules/auth';
 import data from './../AddPost/data';
 
 let DateTimeFormat;
@@ -86,7 +86,8 @@ export default class PostEditor extends Component {
     async componentWillMount() {
         const res = await axios({
             method: 'get',
-            url: `/api/getPost/${this.props.params.postID}`
+            url: `/api/getPost/${this.props.params.postID}`,
+            headers: { Authorization: `bearer ${Auth.getToken()}` }
         });
         if (res.data[0]) {
             const post = res.data[0];
@@ -107,6 +108,7 @@ export default class PostEditor extends Component {
         const res = await axios({
             method: 'put',
             url: '/api/updatePost',
+            headers: { Authorization: `bearer ${Auth.getToken()}` },
             data: this.state
         });
         if (res.data.success) location.pathname = '/';
@@ -147,7 +149,6 @@ export default class PostEditor extends Component {
         return (
             <div>
                 <Header toggleDrawer={this.toggleDrawer} />
-                {/* {!this.state.authorized && <Protector check={this.checkAuth} />} */}
                 <div className="post-creator">
                     <div>
                         <div>
