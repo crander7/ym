@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 import Drawer from 'material-ui/Drawer';
 import { Link } from 'react-router';
 import Add from 'material-ui/svg-icons/content/add-circle';
@@ -28,16 +28,16 @@ export default class OldPosts extends Component {
         this.handleFilter = this.handleFilter.bind(this);
         this.handleRequestClose = this.handleRequestClose.bind(this);
     }
-    async componentWillMount() {
-        const res = await axios({
-            method: 'get',
-            url: '/api/getArchivePosts'
-        });
-        if (res.data[0]) {
-            const posts = res.data.sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
-            this.setState({ posts, filterPosts: posts });
-        } else this.setState({ posts: [], filterPosts: [] });
-    }
+    // async componentWillMount() {
+    //     const res = await axios({
+    //         method: 'get',
+    //         url: '/api/getArchivePosts'
+    //     });
+    //     if (res.data[0]) {
+    //         const posts = res.data.sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
+    //         this.setState({ posts, filterPosts: posts });
+    //     } else this.setState({ posts: [], filterPosts: [] });
+    // }
     toggleDrawer(open, anchorEl) {
         this.setState({ open, anchorEl });
     }
@@ -57,7 +57,7 @@ export default class OldPosts extends Component {
             <div className="post-view">
                 <Header toggleDrawer={this.toggleDrawer} />
                 <h3>Past Posts</h3>
-                <Posts posts={this.state.filterPosts} />
+                <Posts origin="old" />
                 <Drawer
                     className="home-drawer"
                     docked={false}
@@ -126,6 +126,15 @@ export default class OldPosts extends Component {
                             leftIcon={<Clear />}
                             disabled={!this.state.filtered}
                         />
+                        <Link
+                            to="/"
+                            className="normalize-link"
+                            onClick={this.handleRequestClose}
+                        >
+                            <ListItem
+                                primaryText="Upcoming Posts"
+                            />
+                        </Link>
                     </List>
                 </Drawer>
             </div>

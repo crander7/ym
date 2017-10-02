@@ -130,11 +130,13 @@ export default class EditPosts extends Component {
         const { filteredPosts } = this.state;
         const actions = [
             <FlatButton
+                aria-label="Cancel"
                 label="Cancel"
                 primary={true}
                 onClick={this.handleClose}
             />,
             <FlatButton
+                aria-label="Delete"
                 label="Delete"
                 primary={true}
                 onClick={this.handleDelete}
@@ -189,9 +191,10 @@ export default class EditPosts extends Component {
                 </div>
                 <RaisedButton
                     onClick={this.handleOldRequest}
+                    aria-label="Toggle Posts"
                     label="Toggle Old/Upcoming Posts"
                     backgroundColor="#EF3026"
-                    labelColor="white"
+                    labelColor="#ffffff"
                     style={{
                         width: '260px',
                         margin: '15px 50px'

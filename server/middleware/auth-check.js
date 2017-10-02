@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const pgModel = require('./../db/pgModel');
+const userModel = require('./../models/userModel');
 const config = require('./../index.json');
 
 module.exports = async (req, res, next) => {
@@ -11,11 +11,13 @@ module.exports = async (req, res, next) => {
         if (!verified) {
             res.status(401).end();
         } else {
-            const userId = verified.sub;
+            const userId = verified.id;
             try {
-                const user = await pgModel.getUserById(userId);
-                if (typeof user === 'object') next();
-                else res.status(401).end();
+                const user = await userModel.getUserById(userId);
+                if (typeof user === 'object') {
+                    req.user = user;
+                    next();
+                } else res.status(401).end();
             } catch (e) {
                 res.status(401).end();
             }

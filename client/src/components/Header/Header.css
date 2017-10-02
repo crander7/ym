@@ -1,10 +1,12 @@
 .header {
-    background-color: #25798F !important;
+    /* background-color: #25798F !important; */
     text-align: center;
+    background-color: #3D5A80 !important;
+    /* background-color: #EB8946 !important; */
 }
 
 .title {
-    color: white;
+    color: #ffffff;
 }
 
 .normalize-link {

@@ -1,7 +1,80 @@
 const validator = require('validator');
 const passport = require('passport');
+const querystring = require('querystring');
 
-const signUp = (req, res, next) => {
+const facebook = (req, res, next) => {
+    passport.authenticate('facebook', { scope: 'email' })(req, res, next);
+};
+
+const fbCallback = (req, res, next) => {
+    passport.authenticate('facebook', (err, token, userData) => {
+        let query = querystring.stringify({ success: false });
+        if (err) {
+            query = querystring.stringify({
+                success: false,
+                message: 'Facebook encountered an error.'
+            });
+        } else {
+            query = querystring.stringify({
+                success: true,
+                message: 'You have successfully logged in!',
+                token,
+                user: userData.name
+            });
+        }
+        res.redirect(`http://localhost:3000/addToken/?${query}`);
+    })(req, res, next);
+};
+
+const google = (req, res, next) => {
+    passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+};
+
+const googleCb = (req, res, next) => {
+    passport.authenticate('google', (err, token, userData) => {
+        let query = querystring.stringify({ success: false });
+        if (err) {
+            query = querystring.stringify({
+                success: false,
+                message: 'Google encountered an error.'
+            });
+        } else {
+            query = querystring.stringify({
+                success: true,
+                message: 'You have successfully logged in!',
+                token,
+                user: userData.name
+            });
+        }
+        res.redirect(`http://localhost:3000/addToken/?${query}`);
+    })(req, res, next);
+};
+
+const instagram = (req, res, next) => {
+    passport.authenticate('instagram', { scope: 'basic' })(req, res, next);
+};
+
+const igCallback = (req, res, next) => {
+    passport.authenticate('instagram', (err, token, userData) => {
+        let query = querystring.stringify({ success: false });
+        if (err) {
+            query = querystring.stringify({
+                success: false,
+                message: 'Instagram encountered an error.'
+            });
+        } else {
+            query = querystring.stringify({
+                success: true,
+                message: 'You have successfully logged in!',
+                token,
+                user: userData.name
+            });
+        }
+        res.redirect(`http://localhost:3000/addToken/?${query}`);
+    })(req, res, next);
+};
+
+const localSignUp = (req, res, next) => {
     const validationResult = validateSignupForm(req.body); // eslint-disable-line
     if (!validationResult.success) {
         res.json({
@@ -10,7 +83,7 @@ const signUp = (req, res, next) => {
             errors: validationResult.errors
         }).status(400);
     } else {
-        passport.authenticate('local-signup', (err) => {
+        passport.authenticate('local-signup', (err, token, userData) => {
             if (err) {
                 if (err.name === 'User already exists') {
                     res.json({
@@ -29,14 +102,15 @@ const signUp = (req, res, next) => {
             } else {
                 res.json({
                     success: true,
-                    message: 'You have successfully signed up! Now you should be able to log in.'
-                }).status(200);
+                    token,
+                    user: userData.name
+                });
             }
         })(req, res, next);
     }
 };
 
-const login = (req, res, next) => {
+const localLogin = (req, res, next) => {
     const validationResult = validateLoginForm(req.body); // eslint-disable-line
     if (!validationResult.success) {
         res.json({
@@ -61,9 +135,8 @@ const login = (req, res, next) => {
             } else {
                 res.json({
                     success: true,
-                    message: 'You have successfully logged in!',
                     token,
-                    user: userData
+                    user: userData.name
                 });
             }
         })(req, res, next);
@@ -115,6 +188,12 @@ const validateLoginForm = (payload) => {
 };
 
 module.exports = {
-    signUp,
-    login
+    localSignUp,
+    localLogin,
+    facebook,
+    fbCallback,
+    google,
+    googleCb,
+    instagram,
+    igCallback
 };

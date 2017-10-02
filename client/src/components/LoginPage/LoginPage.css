@@ -1,0 +1,102 @@
+@media only screen and (max-width: 768px) {
+    .outer-form {
+        width: 100vw;
+        height: 100vh;
+        z-index: 5;
+        background-color: black;
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+
+    .inner-form {
+        top: -226px;
+        width: 80vw;
+        z-index: 7 !important;
+        margin: 0 auto;
+        position: relative;
+        height: 81vh;
+        padding: 20px 15px;
+    }
+}
+
+.inner-form {
+    top: 0px;
+    width: 100vw;
+    z-index: 2500 !important;
+    margin: 0 auto;
+    position: fixed;
+    left: 0;
+    height: 100vh;
+    padding: 20px 15px;
+}
+
+.upper-x {
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    text-align: center !important;
+}
+
+.divider {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.login-div {
+    color: #767676;
+    padding: 0 16px;
+}
+
+.span-div {
+    position: relative;
+}
+
+.span-div::before {
+    content: '' !important;
+    position: absolute !important;
+    border-bottom: 1px solid #e4e4e4 !important;
+    top: 50% !important;
+    right: 100% !important;
+    width: 37.5vw !important;
+}
+
+.span-div::after {
+    content: '' !important;
+    position: absolute !important;
+    border-bottom: 1px solid #e4e4e4 !important;
+    top: 50% !important;
+    left: 100% !important;
+    width: 37.5vw !important;
+}
+
+.field-line {
+    width: 85vw !important;
+    margin: 0 auto;
+}
+
+.button-line {
+    margin: 15px auto 0;
+    width: 85vw;
+}
+
+.bottom-div {
+    margin: 0 auto;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #DBDBDB !important;
+    width: 85vw;
+}
+
+.btn-cont {
+    display: table;
+    margin: 0px auto;
+}
+
+.w {
+    width: 100% !important;
+}
+
+.forgot {
+    display: block;
+    margin: 15px auto;
+}

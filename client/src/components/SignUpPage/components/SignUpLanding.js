@@ -2,18 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router';
 import { Card, CardText } from 'material-ui/Card';
-import TextField from 'material-ui/TextField';
 import Icon from 'material-ui/svg-icons/navigation/close';
 
-export default class LoginForm extends Component {
+export default class SignUpLanding extends Component {
     render() {
-        const {
-            onSubmit,
-            onChange,
-            errors,
-            successMessage,
-            user
-        } = this.props;
         return (
             <div>
                 <div className="outer-form" />
@@ -23,7 +15,7 @@ export default class LoginForm extends Component {
                         aria-label="Close"
                         focusable="true"
                         className="upper-x"
-                        onClick={e => this.props.closeLogin(e, true, 'login')}
+                        onClick={e => this.props.closeLogin(e, true, 'signup')}
                         role="button"
                     >
                         <Icon />
@@ -41,7 +33,7 @@ export default class LoginForm extends Component {
                                 </svg>
                             </div>
                             <div className="text-cont">
-                                <span className="network">Log in with Facebook</span>
+                                <span className="network">Sign up with Facebook</span>
                             </div>
                         </div>
                     </a>
@@ -59,7 +51,7 @@ export default class LoginForm extends Component {
                                 </svg>
                             </div>
                             <div className="text-cont g">
-                                <span className="network">Log in with Google</span>
+                                <span className="network">Sign up with Google</span>
                             </div>
                         </div>
                     </a>
@@ -76,59 +68,39 @@ export default class LoginForm extends Component {
                         label="Log in with LDS.org"
                         onClick={this.props.ldsCheck}
                     /> */}
-                    <form action="/" onSubmit={onSubmit}>
-                        {successMessage && <p className="success-message">{successMessage}</p>}
-                        {errors.summary && <p className="error-message">{errors.summary}</p>}
-                        <div className="field-line">
-                            <TextField
-                                fullWidth={true}
-                                floatingLabelText="Email"
-                                name="email"
-                                errorText={errors.email}
-                                onChange={onChange}
-                                value={user.email}
-                            />
+                    <Link
+                        to="/signup"
+                        className="normalize-link email-btn"
+                    >
+                        <div className="btn-cont">
+                            <div className="icon-cont">
+                                <svg viewBox="0 0 24 24" role="presentation" aria-hidden="true" focusable="false" style={{ display: 'block', fill: 'currentcolor', height: '18px', width: '18px' }}>
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M22.497 4H1.503C.665 4 0 4.673 0 5.507v12.985C0 19.326.672 20 1.503 20h20.994A1.5 1.5 0 0 0 24 18.492V5.507C24 4.674 23.328 4 22.497 4zM23 18.203l-6.141-7.907L23 5.628v12.575zM22.174 5l-9.685 7.362c-.259.196-.719.196-.977 0L1.827 5h20.347zM1 5.628l6.14 4.667L1 18.185V5.629zM1.634 19l6.302-8.1 2.97 2.258c.616.468 1.572.468 2.188 0l2.969-2.257L22.353 19H1.633z"
+                                    />
+                                </svg>
+                            </div>
+                            <div className="text-cont">
+                                <span className="network">Sign up with Email</span>
+                            </div>
                         </div>
-                        <div className="field-line">
-                            <TextField
-                                fullWidth={true}
-                                floatingLabelText="Password"
-                                type="password"
-                                name="password"
-                                onChange={onChange}
-                                errorText={errors.password}
-                                value={user.password}
-                            />
-                        </div>
-                        <div className="button-line">
-                            <button className="email-btn w" type="submit">
-                                <div>
-                                    <span className="network">Log in</span>
-                                </div>
-                            </button>
-                        </div>
-                        <span className="link-color forgot" role="button" tabIndex={0}>Forgot password?</span>
-                        <div>
-                            <div className="bottom-div" />
-                        </div>
-                        <CardText style={{ textAlign: 'center' }}>{'Don\'t have an account?'} <Link className="normalize-link link-color" to={'/signup'}>Sign up</Link></CardText>
-                    </form>
+                    </Link>
+                    <div>
+                        <div className="bottom-div" />
+                    </div>
+                    <CardText>{'Already have an account?'} <Link style={{ color: '#2A798E' }} className="normalize-link" to={'/login'}>Log in</Link></CardText>
                 </Card>
             </div>
         );
     }
 }
 
-LoginForm.defaultProps = {
+SignUpLanding.defaultProps = {
     closeLogin: null
 };
 
-LoginForm.propTypes = {
-    onSubmit: PropTypes.func.isRequired,
-    onChange: PropTypes.func.isRequired,
-    errors: PropTypes.object.isRequired,
-    successMessage: PropTypes.string.isRequired,
-    user: PropTypes.object.isRequired,
+SignUpLanding.propTypes = {
     closeLogin: PropTypes.func
     // ldsCheck: PropTypes.func.isRequired
 };

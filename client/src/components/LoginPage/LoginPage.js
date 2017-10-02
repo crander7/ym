@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import Auth from './../../modules/auth';
 import LoginForm from './components/LoginForm';
+import './LoginPage.css';
 
 export default class LoginPage extends Component {
     constructor(props) {
@@ -60,7 +62,18 @@ export default class LoginPage extends Component {
                 errors={this.state.errors}
                 successMessage={this.state.successMessage}
                 user={this.state.user}
+                closeLogin={this.props.closeLogin}
+                // ldsCheck={this.props.ldsCheck}
             />
         );
     }
 }
+
+LoginPage.defaultProps = {
+    closeLogin: null
+};
+
+LoginPage.propTypes = {
+    closeLogin: PropTypes.func
+    // ldsCheck: PropTypes.func.isRequired
+};

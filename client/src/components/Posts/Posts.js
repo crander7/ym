@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { PropTypes } from 'prop-types';
+import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
+import axios from 'axios';
 import Card from 'material-ui/Card';
 import './Posts.css';
 
@@ -51,12 +52,42 @@ export default class Posts extends Component {
         super(props);
         this.state = {
             showDesc: false,
-            descId: null
+            descId: null,
+            posts: null,
+            filterPosts: null,
+            filterVal: '',
+            resetFilter: false
         };
         this.handlePostClick = this.handlePostClick.bind(this);
+        this.filterPosts = this.filterPosts.bind(this);
+    }
+    async componentWillMount() {
+        let posts = [];
+        let url = '/api/getUpcomingPosts';
+        const origin = this.props.origin;
+        if (origin === 'old') url = '/api/getArchivePosts';
+        const res = await axios({
+            method: 'get',
+            url
+        });
+        if (res.data[0]) {
+            if (origin === 'upcoming') posts = res.data.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+            else if (origin === 'old') posts = res.data.sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
+            this.setState({ posts, filterPosts: posts });
+        } else this.setState({ posts: [], filterPosts: [] });
     }
     componentWillReceiveProps(nextProps) {
-        this.setState({ posts: nextProps.posts });
+        if (nextProps.filterVal !== '' && nextProps.filterVal !== this.state.filterVal) {
+            this.filterPosts(nextProps.filterVal);
+        }
+        if (nextProps.resetFilter && nextProps.resetFilter !== this.state.resetFilter) {
+            this.setState({ filterPosts: this.state.posts });
+        }
+    }
+    filterPosts(filterVal) {
+        const { posts } = this.state;
+        const filterPosts = posts.filter(post => post.activity === filterVal);
+        this.setState({ filterVal, filterPosts });
     }
     handlePostClick(id) {
         if (id !== this.state.descId && this.state.descId !== null) this.setState({ descId: id });
@@ -64,10 +95,10 @@ export default class Posts extends Component {
         else this.setState({ showDesc: true, descId: id });
     }
     render() {
-        const { posts } = this.state;
+        const { filterPosts } = this.state;
         return (
             <div className="posts-main">
-                {posts && posts.map((post, idx) => (
+                {filterPosts && filterPosts.map((post, idx) => (
                     <Card
                         key={post.id}
                         className="mb10 card"
@@ -76,7 +107,7 @@ export default class Posts extends Component {
                             <span className="act-title">{post.activity}:</span>
                             <span className="orig-title"> {post.title}</span>
                         </div>
-                        <div className="mb10">
+                        <div className="mb10 new-style">
                             <span><b>{getDay(post.start_date)}, </b></span>
                             <span>{formatTimestamp(post.start_date)}</span>
                         </div>
@@ -86,8 +117,9 @@ export default class Posts extends Component {
                             <p className="post-desc">{post.body}</p>
                         </div>}
                         <RaisedButton
-                            backgroundColor="#4BC0EA"
-                            labelColor="white"
+                            aria-label="Toggle Description"
+                            backgroundColor="#F46036"
+                            labelColor="#ffffff"
                             label={this.state.showDesc && this.state.descId === idx ? 'Show Less' : 'Show More'}
                             onClick={() => this.handlePostClick(idx)}
                             className="mt10"
@@ -100,12 +132,13 @@ export default class Posts extends Component {
 }
 
 Posts.defaultProps = {
-    posts: []
+    filterVal: ''
+    // F46036
+    // 009FFD
 };
 
 Posts.propTypes = {
-    posts: PropTypes.oneOfType([
-        PropTypes.array,
-        PropTypes.arrayOf(PropTypes.object)
-    ])
+    origin: PropTypes.string.isRequired,
+    filterVal: PropTypes.string.isRequired,
+    resetFilter: PropTypes.bool.isRequired
 };

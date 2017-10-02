@@ -19,6 +19,7 @@
 }
 
 .act-title {
+    font-family: 'BioRhyme', sans-serif;
     font-size: 25px;
     font-weight: bold;
     color: #575B61;
@@ -26,7 +27,7 @@
 
 .orig-title {
     font-size: 25px;
-    color: #575B61;
+    color: #114B5F;
     font-weight: bold;
 }
 
@@ -42,6 +43,12 @@
 
 .mb10 {
     margin-bottom: 10px;
+}
+
+.new-style {
+    /* background-color: #69F43B; */
+    display: table;
+    margin: 0px auto;
 }
 
 .card {

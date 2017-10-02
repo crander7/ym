@@ -33,29 +33,32 @@ if (areIntlLocalesSupported(['fr', 'fa-IR'])) {
 const disableMondays = date => date.getDay() === 1;
 
 const parseIncomingTime = (timeStr) => {
-    const today = new Date();
-    let hourNotation = null;
-    if (timeStr.length === 7) hourNotation = timeStr.slice(4);
-    else hourNotation = timeStr.slice(5);
-    hourNotation = hourNotation.trim();
-    const timeArr = timeStr.split(':');
-    timeArr[1] = timeArr[1].substring(0, 2);
-    if (hourNotation.charAt(0) === 'a') {
-        if (timeArr[0] === '12') {
-            today.setHours(0);
+    if (timeStr) {
+        const today = new Date();
+        let hourNotation = null;
+        if (timeStr.length === 7) hourNotation = timeStr.slice(4);
+        else hourNotation = timeStr.slice(5);
+        hourNotation = hourNotation.trim();
+        const timeArr = timeStr.split(':');
+        timeArr[1] = timeArr[1].substring(0, 2);
+        if (hourNotation.charAt(0) === 'a') {
+            if (timeArr[0] === '12') {
+                today.setHours(0);
+                today.setMinutes(Number(timeArr[1]));
+            } else {
+                today.setHours(Number(timeArr[0]));
+                today.setMinutes(Number(timeArr[1]));
+            }
+        } else if (timeArr[0] === '12') {
+            today.setHours(12);
             today.setMinutes(Number(timeArr[1]));
         } else {
-            today.setHours(Number(timeArr[0]));
+            today.setHours(12 + Number(timeArr[0]));
             today.setMinutes(Number(timeArr[1]));
         }
-    } else if (timeArr[0] === '12') {
-        today.setHours(12);
-        today.setMinutes(Number(timeArr[1]));
-    } else {
-        today.setHours(12 + Number(timeArr[0]));
-        today.setMinutes(Number(timeArr[1]));
+        return today;
     }
-    return today;
+    return null;
 };
 
 export default class PostEditor extends Component {
@@ -221,9 +224,10 @@ export default class PostEditor extends Component {
                         onChange={this.handleTimeChange}
                     />
                     <RaisedButton
+                        aria-label="Submit Form"
                         label="Submit"
                         backgroundColor="#4BC0EA"
-                        labelColor="white"
+                        labelColor="#ffffff"
                         onClick={this.onSubmit}
                     />
                 </div>

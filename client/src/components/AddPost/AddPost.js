@@ -220,9 +220,10 @@ export default class AddPost extends Component {
                         onChange={this.handleTimeChange}
                     />
                     <RaisedButton
+                        aria-label="Submit Form"
                         label="Submit"
                         backgroundColor="#4BC0EA"
-                        labelColor="white"
+                        labelColor="#ffffff"
                         onClick={this.onSubmit}
                     />
                     <CheckBox

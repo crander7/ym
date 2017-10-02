@@ -1,16 +1,22 @@
-class Auth {
-    static authenticateUser(token) {
+import jwtDecode from 'jwt-decode';
+
+const Auth = {
+    authenticateUser: (token) => {
         localStorage.setItem('token', token);
-    }
-    static isUserAuthenticated() {
-        return localStorage.getItem('token') !== null;
-    }
-    static deauthenticateUser() {
+    },
+    isUserAuthenticated: () => {
+        let token = null;
+        try {
+            token = jwtDecode(localStorage.getItem('token'));
+        } catch (e) {
+            localStorage.removeItem('token');
+        }
+        return token;
+    },
+    deauthenticateUser: () => {
         localStorage.removeItem('token');
-    }
-    static getToken() {
-        return localStorage.getItem('token');
-    }
-}
+    },
+    getToken: () => localStorage.getItem('token')
+};
 
 export default Auth;

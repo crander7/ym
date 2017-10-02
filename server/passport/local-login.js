@@ -1,8 +1,7 @@
-const jwt = require('jsonwebtoken');
 const PassportLocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
-const pgModel = require('./../db/pgModel');
-const config = require('./../index.json');
+const userModel = require('./../models/userModel');
+const jwt = require('./../middleware/signer');
 
 module.exports = new PassportLocalStrategy({
     usernameField: 'email',
@@ -16,10 +15,10 @@ module.exports = new PassportLocalStrategy({
     };
     let user = null;
     try {
-        user = await pgModel.getUserByEmail(userData.email);
+        user = await userModel.getUserByEmail(userData.email);
     } catch (e) {
         if (e === 'No User Found') {
-            const error = new Error('Incorrect email or password');
+            const error = new Error('Email provided doesn\'t match any accounts');
             error.name = 'IncorrectCredentialsError';
             done(error);
         } else done(e);
@@ -32,13 +31,7 @@ module.exports = new PassportLocalStrategy({
                 error.name = 'IncorrectCredentialsError';
                 done(error);
             } else {
-                const payload = {
-                    sub: user.id
-                };
-                const token = jwt.sign(payload, config.jwtSecret);
-                const data = {
-                    name: `${user.firstName} ${user.lastName}`
-                };
+                const { token, data } = jwt.signer(user);
                 done(null, token, data);
             }
         });
