@@ -67,6 +67,7 @@
         "camelcase": "off",
         "no-param-reassign": "off",
         "react/forbid-prop-types": "off",
-        "no-console": "off"
+        "no-console": "off",
+        "no-use-before-define": "off"
     }
 }

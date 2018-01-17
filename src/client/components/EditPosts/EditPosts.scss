@@ -1,0 +1,57 @@
+.filter-list > div > div {
+    color: gray;
+}
+
+.post-view {
+    text-align: center;
+}
+
+.home-drawer {
+    text-align: left;
+}
+.remove-outline:focus {
+    outline: none;
+}
+
+.remove-outline {
+    cursor: pointer;
+    padding-bottom: 10px;
+}
+
+.posts-edit {
+    padding-top: 25px;
+    width: 85vw;
+    margin: auto;
+}
+
+.act-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #E74C3C;
+    text-align: right;
+}
+
+.orig-title {
+    font-size: 25px;
+    color: #000000;
+    font-weight: bold;
+}
+
+.hr-buff {
+    padding-bottom: 20px;
+}
+
+.actions {
+    // display: table-cell;
+    // // position: relative;
+    // // left: 50px;
+    // /* bottom: 7px; */
+    // vertical-align: middle;
+    position: relative;
+    top: 85px;
+    left: 80%;
+}
+
+.post-edit-cont {
+    margin-top: -40px;
+}

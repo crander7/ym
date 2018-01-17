@@ -1,0 +1,118 @@
+.fb-button {
+    margin: 0 auto;
+    margin-bottom: 10px;
+    margin-top: 50px;
+    cursor: pointer !important;
+    -webkit-transition: background 0.3s, border-color 0.3s !important;
+    -moz-transition: background 0.3s, border-color 0.3s !important;
+    transition: background 0.3s, border-color 0.3s !important;
+    position: relative !important;
+    display: block !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    border: 2px solid transparent !important;
+    border-radius: 4px !important;
+    width: 80% !important;
+    font-family: Circular,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif !important;
+    font-size: 19px !important;
+    line-height: 22px !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    padding-right: 24px !important;
+    padding-left: 24px !important;
+    background: #4568b2 !important;
+}
+
+.g-button {
+    margin: 0 auto;
+    margin-bottom: 10px;
+    cursor: pointer !important;
+    -webkit-transition: background 0.3s, border-color 0.3s !important;
+    -moz-transition: background 0.3s, border-color 0.3s !important;
+    transition: background 0.3s, border-color 0.3s !important;
+    position: relative !important;
+    display: block !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    border: 2px solid transparent !important;
+    border-radius: 4px !important;
+    width: 80% !important;
+    font-family: Circular,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif !important;
+    font-size: 19px !important;
+    line-height: 22px !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+    padding-right: 24px !important;
+    padding-left: 24px !important;
+    background: #ffffff !important;
+    border-color: #767676 !important;
+}
+
+.email-btn {
+    background-color: #79D7E4;
+    -webkit-transition: background 0.3s, border-color 0.3s !important;
+    -moz-transition: background 0.3s, border-color 0.3s !important;
+    transition: background 0.3s, border-color 0.3s !important;
+    position: relative !important;
+    display: block !important;
+    cursor: pointer;
+    text-align: center !important;
+    border: 2px solid transparent !important;
+    border-radius: 4px !important;
+    width: 80%;
+    font-family: Circular,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif !important;
+    font-size: 19px !important;
+    line-height: 22px !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+    color: #ffffff;
+    font-weight: 700 !important;
+    padding-right: 24px !important;
+    padding-left: 24px !important;
+    margin: 0 auto;
+    margin-top: 28px;
+}
+
+.icon-cont {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.text-cont {
+    display: table-cell;
+    font-weight: 400;
+}
+
+.g {
+    font-weight: 400 !important;
+}
+
+.network {
+    margin-left: 15px;
+    font-size: 20px;
+}
+
+.link-color {
+    color: #2A798E;
+}
+
+.signup-head {
+    margin: 50px auto 15px;
+    display: table;
+}
+
+.separator {
+    color: #E4E4E4;
+    border-style: solid;
+    border-bottom: none;
+    width: 85vw;
+    margin: 24px auto 4px;
+}
+
+.mt20 {
+    margin-top: 20px;
+}

@@ -1,0 +1,21 @@
+{
+  "short_name": "Hillcrest YM",
+  "name": "1st Ward Young Men",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "splash.ico",
+      "sizes": "500x510",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff",
+  "orientation": "portrait"  
+}
