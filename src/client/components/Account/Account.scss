@@ -1,0 +1,81 @@
+.generic-pic {
+    display: block !important;
+    height: 150px !important;
+    width: 150px !important;;
+    margin: 0 auto !important;
+}
+
+.profile-pic {
+    border-radius: 50%;
+    margin: 0 auto;
+    display: block;
+    margin-top: 15px;
+    width: 150px;
+    height: 150px;
+}
+
+.profile-name {
+    text-align: center;
+    margin-top: 5px;
+}
+
+.save-profile {
+    display: block !important;
+    margin: 0 auto;
+    width: 160px;
+    margin-top: 20px;
+}
+
+.form-cont {
+    width: 80vw;
+    margin: 0 auto;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+.show {
+    display: block;
+    padding: 0 15px;
+}
+
+.hide {
+    display: none;
+}
+
+.center {
+    text-align: center;
+}
+
+.caret {
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+.edit-group {
+    font-size: 20px;
+}
+
+.edit-group:focus {
+    outline: none;
+}
+
+.edit {
+    width: 230px !important;
+    margin: 15px auto;
+}
+
+.not-desc {
+    padding-top: 15px !important;
+    margin-bottom: 15px;
+    font-size: 17px;
+}
+
+.status {
+    vertical-align: super;
+    margin-left: 10px;
+}
+
+.status-cont {
+    display: table;
+    margin: 0 auto 15px;
+}

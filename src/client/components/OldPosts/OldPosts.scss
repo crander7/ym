@@ -1,0 +1,18 @@
+@import './../../theme/_variables.scss';
+
+.filter-list > div > div {
+    color: $midgrey;
+    padding: 10px 16px !important;
+}
+
+.post-view {
+    text-align: center;
+}
+
+.home-drawer {
+    text-align: left;
+}
+
+.old-header {
+    color: #E74C3C;
+}

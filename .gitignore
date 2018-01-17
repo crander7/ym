@@ -3,11 +3,14 @@
 # dependencies
 /node_modules
 
+# private variables
+/src/server/index.json
+
 # testing
 /coverage
 
 # production
-client/build
+/build
 
 # misc
 .DS_Store
