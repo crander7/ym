@@ -33,7 +33,7 @@ export default class LoginForm extends Component {
                     >
                         <Icon />
                     </Link>}
-                    <a href="https://1stwardym.com/auth/facebook" className="fb-button">
+                    <a href="138.68.21.160:8086/auth/facebook" className="fb-button">
                         <div className="btn-cont">
                             <div className="icon-cont">
                                 <svg viewBox="0 0 32 32" role="presentation" aria-hidden="true" focusable="false" style={{ display: 'block', fill: 'currentcolor', height: '18px', width: '18px' }}>
@@ -45,7 +45,7 @@ export default class LoginForm extends Component {
                             </div>
                         </div>
                     </a>
-                    <a href="https://1stwardym.com/auth/google" className="g-button">
+                    <a href="138.68.21.160:8086/auth/google" className="g-button">
                         <div className="btn-cont">
                             <div className="icon-cont">
                                 <svg viewBox="0 0 18 18" role="presentation" aria-hidden="true" focusable="false" style={{ display: 'block', height: '18px', width: '18px' }}>
