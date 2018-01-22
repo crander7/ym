@@ -190,7 +190,8 @@ export default class EditPosts extends Component {
                                 <Popover
                                     open={this.state.openPopover && post.id === this.state.actionsIdx}
                                     anchorEl={this.state.popoverAnchor}
-                                    anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                    targetOrigin={{ horizontal: 'right', vertical: 'top' }}
                                     onRequestClose={this.handleRequestClose}
                                 >
                                     <Menu>

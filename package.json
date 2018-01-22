@@ -87,7 +87,9 @@
     "client": "node config/scripts/start.js",
     "build": "node config/scripts/build.js",
     "start-local": "node src/server/server.js",
-    "start": "NODE_ENV=production pm2 start src/server/server.js",
+    "start": "NODE_ENV=production pm2 start src/server/server.js --name ym",
+    "delete": "pm2 delete ym",
+    "restart": "pm2 restart ym",
     "test": "node scripts/test.js --env=jsdom"
   },
   "jest": {

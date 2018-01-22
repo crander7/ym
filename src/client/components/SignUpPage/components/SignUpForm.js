@@ -40,11 +40,11 @@ export default class SignUpForm extends Component {
                     </Link>
                     <div className="signup-head">
                         <span>Sign up with </span>
-                        <a href="https://1stwardym.com/auth/facebook" className="normalize-link link-color">
+                        <a href="http://localhost:8086/auth/facebook" className="normalize-link link-color">
                             Facebook
                         </a>
                         <span> or </span>
-                        <a href="https://1stwardym.com/auth/google" className="normalize-link link-color">
+                        <a href="http://localhost:8086/auth/google" className="normalize-link link-color">
                             Google
                         </a>
                     </div>
