@@ -4265,6 +4265,10 @@ klaw@^1.0.0:
   optionalDependencies:
     graceful-fs "^4.1.9"
 
+konphyg@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/konphyg/-/konphyg-1.4.0.tgz#ebbeae0d9251790ad6dab40a40d838ea7ce23cdd"
+
 latest-version@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/latest-version/-/latest-version-2.0.0.tgz#56f8d6139620847b8017f8f1f4d78e211324168b"

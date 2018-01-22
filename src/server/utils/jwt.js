@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
-const config = require('./../index.json');
+const konfig = require('konphyg')(`${__dirname}/../../config`);
+
+const config = konfig('index');
 
 const signer = (user) => {
     const payload = {

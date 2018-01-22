@@ -96,6 +96,9 @@ const handleEditReq = async (req, res) => {
 const getUser = async (req, res) => {
     try {
         const resp = await userModel.getUserById(req.userId);
+        const children = await userModel.getChildren(req.userId);
+        if (children[0]) resp.kids = children;
+        else resp.kids = [];
         res.json(resp);
     } catch (e) {
         res.json({ error: e });
@@ -124,6 +127,37 @@ const addTag = async (req, res) => {
     }
 };
 
+const deleteAccount = async (req, res) => {
+    const id = req.params.id;
+    try {
+        await userModel.deleteAccount(id);
+        res.json({ success: true });
+    } catch (e) {
+        res.json({ error: e });
+        email.sendErrorReport(e, 'deleteAccount');
+    }
+};
+
+const setParent = async (req, res) => {
+    try {
+        await userModel.setParent(req.body.val, req.body.id);
+        res.json({ success: true });
+    } catch (e) {
+        res.json({ error: e });
+        email.sendErrorReport(e, 'setParent');
+    }
+};
+
+const addKid = async (req, res) => {
+    try {
+        const data = await userModel.addKid(req.body);
+        res.json({ success: true, kid: data[0] });
+    } catch (e) {
+        res.json({ error: e });
+        email.sendErrorReport(e, 'addKid');
+    }
+};
+
 module.exports = {
     addPost,
     getUpcomingPosts,
@@ -135,5 +169,8 @@ module.exports = {
     handleEditReq,
     getUser,
     updateUser,
-    addTag
+    addTag,
+    deleteAccount,
+    setParent,
+    addKid
 };

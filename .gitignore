@@ -4,7 +4,7 @@
 /node_modules
 
 # private variables
-/src/server/index.json
+/src/config/
 
 # testing
 /coverage

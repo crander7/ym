@@ -4,6 +4,9 @@ const email = require('./../utils/email');
 const validator = require('./../utils/validator');
 const redisModel = require('./../models/redisModel');
 const jwt = require('./../utils/jwt');
+const konfig = require('konphyg')(`${__dirname}/../../config`);
+
+const config = konfig('index');
 
 const check4Token = async (req, res) => {
     let token = false;
@@ -55,7 +58,7 @@ const fbCallback = (req, res, next) => {
                 email.sendErrorReport(`Redis failed to set token ${e}`, 'fbCallback');
             }
         }
-        res.redirect(`https://1stwardym.com/addToken/?${query}`);
+        res.redirect(`${config.baseUrl}/addToken/?${query}`);
     })(req, res, next);
 };
 
@@ -90,7 +93,7 @@ const googleCb = (req, res, next) => {
                 email.sendErrorReport(`Redis failed to set token ${e}`, 'googleCb');
             }
         }
-        res.redirect(`https://1stwardym.com/addToken/?${query}`);
+        res.redirect(`${config.baseUrl}/addToken/?${query}`);
     })(req, res, next);
 };
 

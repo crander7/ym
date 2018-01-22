@@ -1,7 +1,9 @@
 const FacebookStrategy = require('passport-facebook').Strategy;
 const userModel = require('./../models/userModel');
-const config = require('./../index.json');
+const konfig = require('konphyg')(`${__dirname}/../../config`);
 const jwt = require('./../utils/jwt');
+
+const config = konfig('index');
 
 module.exports = new FacebookStrategy({
     clientID: config.passport.facebook.appID,

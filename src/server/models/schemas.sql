@@ -1,10 +1,11 @@
 DROP TABLE IF EXISTS post CASCADE;
-DROP TABLE IF EXISTS user CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS children CASCADE;
 DROP TYPE IF EXISTS alert_type;
 DROP TYPE IF EXISTS act_type;
 
 CREATE TYPE alert_type AS ENUM ('none', 'email', 'text', 'call');
-CREATE TYPE act_type AS ENUM ('user', 'editor', 'admin');
+CREATE TYPE act_type AS ENUM ('user', 'editor', 'admin', 'parent');
 
 CREATE TABLE IF NOT EXISTS post (
     id SERIAL PRIMARY KEY NOT NULL,
@@ -40,4 +41,12 @@ CREATE TABLE IF NOT EXISTS users (
     edit_req BOOLEAN NOT NULL DEFAULT FALSE,
     class VARCHAR(40) NULL DEFAULT NULL,
     UNIQUE (email)
+);
+
+CREATE TABLE IF NOT EXISTS children (
+    id SERIAL PRIMARY KEY NOT NULL,
+    name VARCHAR(100) NULL DEFAULT NULL,
+    dob TIMESTAMPTZ NULL DEFAULT NULL,
+    class VARCHAR(40) NULL DEFAULT NULL,
+    user_id INT REFERENCES users(id)
 );

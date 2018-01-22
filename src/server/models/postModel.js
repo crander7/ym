@@ -1,12 +1,14 @@
 const pg = require('pg');
-const config = require('./../index.json').postgreSQL;
+const konfig = require('konphyg')(`${__dirname}/../../config`);
+
+const config = konfig('index');
 
 const dbConfig = {
-    user: config.username,
-    database: config.database,
-    host: config.host,
-    port: config.port,
-    password: config.password,
+    user: config.postgreSQL.username,
+    database: config.postgreSQL.database,
+    host: config.postgreSQL.host,
+    port: config.postgreSQL.port,
+    password: config.postgreSQL.password,
     max: 20,
     min: 4
 };

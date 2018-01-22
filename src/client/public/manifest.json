@@ -9,7 +9,7 @@
     },
     {
       "src": "splash.ico",
-      "sizes": "500x510",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ],

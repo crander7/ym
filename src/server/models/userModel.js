@@ -1,12 +1,14 @@
 const pg = require('pg');
-const config = require('./../index.json').postgreSQL;
+const konfig = require('konphyg')(`${__dirname}/../../config`);
+
+const config = konfig('index');
 
 const dbConfig = {
-    user: config.username,
-    database: config.database,
-    host: config.host,
-    port: config.port,
-    password: config.password,
+    user: config.postgreSQL.username,
+    database: config.postgreSQL.database,
+    host: config.postgreSQL.host,
+    port: config.postgreSQL.port,
+    password: config.postgreSQL.password,
     max: 20,
     min: 4
 };
@@ -46,14 +48,8 @@ const addSocialUser = (network, profile) => new Promise(async (resolve, reject) 
     }
     try {
         client = await pool.connect();
-        const res = await client.query(`
-            INSERT INTO users (first_name, last_name, display_name, ${network}_photo, email, ${network}_id) 
-                VALUES ($$${profile.name.givenName}$$, $$${profile.name.familyName}$$, $$${profile.displayName}$$, $$${profile.photos[0].value}$$, $$${profile.emails[0].value}$$, $$${profile.id}$$) 
-            ON CONFLICT (email) 
-                DO UPDATE 
-                SET ${network}_id = EXCLUDED.${network}_id, ${network}_photo = EXCLUDED.${network}_photo
-            RETURNING *;
-        `);
+        const q = `INSERT INTO users (first_name, last_name, display_name, ${network}_photo, email, ${network}_id) VALUES ($$${profile.name.givenName}$$, $$${profile.name.familyName}$$, $$${profile.displayName}$$, $$${profile.photos[0].value}$$, $$${profile.emails[0].value}$$, $$${profile.id}$$) ON CONFLICT (email) DO UPDATE SET ${network}_id = EXCLUDED.${network}_id, ${network}_photo = EXCLUDED.${network}_photo RETURNING *;`;
+        const res = await client.query(q);
         client.release();
         if (res.rows[0]) resolve(res.rows[0]);
         else reject('No User Found');
@@ -68,7 +64,7 @@ const getUserById = id => new Promise(async (resolve, reject) => {
     let client = null;
     try {
         client = await pool.connect();
-        const res = await client.query(`SELECT * FROM users WHERE id = ${id}`);
+        const res = await client.query(`SELECT * FROM users WHERE id = ${id};`);
         client.release();
         if (res.rows[0]) resolve(res.rows[0]);
         else reject('No User Found');
@@ -83,7 +79,7 @@ const getUserByEmail = email => new Promise(async (resolve, reject) => {
     let client = null;
     try {
         client = await pool.connect();
-        const res = await client.query(`SELECT * FROM users WHERE email = $$${email}$$`);
+        const res = await client.query(`SELECT * FROM users WHERE email = $$${email}$$;`);
         client.release();
         if (res.rows[0]) resolve(res.rows[0]);
         else reject('No User Found');
@@ -98,7 +94,7 @@ const getUserBySocialId = (network, id) => new Promise(async (resolve, reject) =
     let client = null;
     try {
         client = await pool.connect();
-        const res = await client.query(`SELECT * FROM users WHERE ${network}_id = $$${id}$$`);
+        const res = await client.query(`SELECT * FROM users WHERE ${network}_id = $$${id}$$;`);
         client.release();
         if (res.rows[0]) resolve(res.rows[0]);
         else reject('No User Found');
@@ -113,7 +109,7 @@ const getEditReqs = () => new Promise(async (resolve, reject) => {
     let client = null;
     try {
         client = await pool.connect();
-        const res = await client.query('SELECT * FROM users WHERE edit_req = true');
+        const res = await client.query('SELECT * FROM users WHERE edit_req = TRUE;');
         client.release();
         resolve(res.rows);
     } catch (e) {
@@ -144,7 +140,7 @@ const updateUser = user => new Promise(async (resolve, reject) => {
     let client = null;
     try {
         client = await pool.connect();
-        await client.query(`UPDATE users SET display_name = $$${user.display_name}$$, first_name = $$${user.first_name}$$, last_name = $$${user.last_name}$$, phone = ${user.phone ? `${user.phone}` : null}, alerts = ${user.alerts ? `'${user.alerts}'` : null}, alert_days = ${user.alert_days}, alert_hour = ${user.alert_hour}, birthday = ${user.birthday ? `'${user.birthday}'` : null}, edit_req = ${user.edit_req} WHERE id = ${user.id}`); // eslint-disable-line
+        await client.query(`UPDATE users SET display_name = $$${user.display_name}$$, first_name = $$${user.first_name}$$, last_name = $$${user.last_name}$$, phone = ${user.phone ? `${user.phone}` : null}, alerts = ${user.alerts ? `'${user.alerts}'` : null}, alert_days = ${user.alert_days}, alert_hour = ${user.alert_hour}, birthday = ${user.birthday ? `'${user.birthday}'` : null}, edit_req = ${user.edit_req} WHERE id = ${user.id};`); // eslint-disable-line
         client.release();
         resolve();
     } catch (e) {
@@ -158,13 +154,28 @@ const getAllUsers4Notifications = hour => new Promise(async (resolve, reject) =>
     let client = null;
     try {
         client = await pool.connect();
-        const qs = `SELECT * FROM users WHERE alerts IN ('email', 'text') AND alert_hour = ${hour}`;
+        const qs = `SELECT alerts, alert_days, alert_hour, class, email, phone, display_name FROM users WHERE account != 'parent' AND alerts IN ('email', 'text') AND alert_hour = ${hour}`;
         const res = await client.query(qs);
         client.release();
         resolve(res.rows);
     } catch (e) {
         if (client) client.release();
         const error = `db error in getAllUsers4Notifications ${JSON.stringify(e)}`;
+        reject(error);
+    }
+});
+
+const getAllParents4Notification = hour => new Promise(async (resolve, reject) => {
+    let client = null;
+    try {
+        client = await pool.connect();
+        const qs = `SELECT u.alerts, u.alert_days, u.alert_hour, c.class, c.name, u.phone, u.email FROM users AS u JOIN children AS c ON u.id = c.user_id WHERE u.account = 'parent' AND c.class IS NOT NULL AND u.alerts IN ('email', 'text') AND u.alert_hour = ${hour};`;
+        const res = await client.query(qs);
+        client.release();
+        resolve(res.rows);
+    } catch (e) {
+        if (client) client.release();
+        const error = `db error in getAllParents4Notification ${JSON.stringify(e)}`;
         reject(error);
     }
 });
@@ -184,17 +195,123 @@ const getAllUsers = () => new Promise(async (resolve, reject) => {
     }
 });
 
+const getAllChildren = () => new Promise(async (resolve, reject) => {
+    let client = null;
+    try {
+        client = await pool.connect();
+        const qs = 'SELECT * FROM children WHERE class != \'Adults\' OR class IS NULL;';
+        const res = await client.query(qs);
+        client.release();
+        resolve(res.rows);
+    } catch (e) {
+        if (client) client.release();
+        const error = `db error in getAllChildren ${JSON.stringify(e)}`;
+        reject(error);
+    }
+});
+
+const getChildren = id => new Promise(async (resolve, reject) => {
+    let client = null;
+    try {
+        client = await pool.connect();
+        const qs = `SELECT * FROM children WHERE user_id = ${id};`;
+        const res = await client.query(qs);
+        client.release();
+        resolve(res.rows);
+    } catch (e) {
+        if (client) client.release();
+        const error = `db error in getChildren ${JSON.stringify(e)}`;
+        reject(error);
+    }
+});
+
 const updateUserClass = user => new Promise(async (resolve, reject) => {
     let client = null;
     try {
         client = await pool.connect();
-        const qs = `UPDATE users SET class = '${user.class}' WHERE id = ${user.id}`;
+        const qs = `UPDATE users SET class = '${user.class}' WHERE id = ${user.id};`;
         await client.query(qs);
         client.release();
         resolve();
     } catch (e) {
         if (client) client.release();
         const error = `db error in updateUserClass ${JSON.stringify(e)}`;
+        reject(error);
+    }
+});
+
+const updateChildrenClass = user => new Promise(async (resolve, reject) => {
+    let client = null;
+    try {
+        client = await pool.connect();
+        const qs = `UPDATE children SET class = '${user.class}' WHERE id = ${user.id};`;
+        await client.query(qs);
+        client.release();
+        resolve();
+    } catch (e) {
+        if (client) client.release();
+        const error = `db error in updateChildrenClass ${JSON.stringify(e)}`;
+        reject(error);
+    }
+});
+
+const addKid = data => new Promise(async (resolve, reject) => {
+    let client = null;
+    try {
+        client = await pool.connect();
+        const res = await client.query(`INSERT INTO children (name, dob, user_id) VALUES ($$${data.name}$$, '${data.dob}', ${data.id}) returning *;`);
+        client.release();
+        resolve(res.rows);
+    } catch (e) {
+        if (client) client.release();
+        const error = `db error in addKid ${JSON.stringify(e)}`;
+        reject(error);
+    }
+});
+
+const deleteAccount = id => new Promise(async (resolve, reject) => {
+    let client = null;
+    try {
+        client = await pool.connect();
+        await client.query(`DELETE FROM children WHERE user_id = ${id};`);
+        await client.query(`DELETE FROM users WHERE id = ${id};`);
+        client.release();
+        resolve();
+    } catch (e) {
+        if (client) client.release();
+        const error = `db error in deleteAccount ${JSON.stringify(e)}`;
+        reject(error);
+    }
+});
+
+const removeChild = id => new Promise(async (resolve, reject) => {
+    let client = null;
+    try {
+        client = await pool.connect();
+        const qs = `DELETE FROM children WHERE id = ${id};`;
+        await client.query(qs);
+        client.release();
+        resolve();
+    } catch (e) {
+        if (client) client.release();
+        const error = `db error in removeChild ${JSON.stringify(e)}`;
+        reject(error);
+    }
+});
+
+const setParent = (val, id) => new Promise(async (resolve, reject) => {
+    let client = null;
+    let status = 'user';
+    if (val === 'parent') status = 'parent';
+    try {
+        client = await pool.connect();
+        if (status === 'user') await client.query(`DELETE FROM children WHERE user_id = ${id};`);
+        await client.query(`UPDATE users SET account = '${status}' WHERE id = ${id};`);
+        client.release();
+        resolve();
+    } catch (e) {
+        if (client) client.release();
+        const error = `db error in setParent ${JSON.stringify(e)}`;
         reject(error);
     }
 });
@@ -210,5 +327,13 @@ module.exports = {
     updateUser,
     getAllUsers4Notifications,
     getAllUsers,
-    updateUserClass
+    updateUserClass,
+    getAllParents4Notification,
+    getAllChildren,
+    updateChildrenClass,
+    deleteAccount,
+    removeChild,
+    addKid,
+    setParent,
+    getChildren
 };

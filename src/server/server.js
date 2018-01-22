@@ -3,7 +3,7 @@ const path = require('path');
 const compression = require('compression');
 const passport = require('passport');
 const bodyParser = require('body-parser');
-const config = require('./index.json');
+const konfig = require('konphyg')(`${__dirname}/../config`);
 const apiRoutes = require('./routes/api');
 const authRoutes = require('./routes/auth');
 const localSignupStrategy = require('./passport/local-signup');
@@ -13,6 +13,7 @@ const googleStrategy = require('./passport/google');
 const email = require('./utils/email');
 const cronJob = require('./cron/cronJobs');
 
+const config = konfig('index');
 const app = express();
 
 app.use(compression());
@@ -48,5 +49,5 @@ app.get('*', (req, res) => {
 });
 
 app.listen(config.port, () => {
-    console.log(`Server running on port ${config.port}`);
+    console.log(`Server running on port ${config.port} in ${config.version} mode.`);
 });

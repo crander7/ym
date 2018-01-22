@@ -1,5 +1,7 @@
 const nodemailer = require('nodemailer');
-const config = require('./../index.json');
+const konfig = require('konphyg')(`${__dirname}/../../config`);
+
+const config = konfig('index');
 
 const EMAIL_ACCOUNT_USER = config.mailer.email;
 const EMAIL_ACCOUNT_PASSWORD = config.mailer.password;
@@ -60,7 +62,26 @@ const notification = (user, post, dayOffset = false) => {
     else if (user.alert_days === 2) text += 'happening in 2 days';
     else if (user.alert_days === 3) text += 'happening in 3 days';
     if (post.activity !== 'Anouncement') text += ` meet  at ${post.start_time}. The activity details are: ${post.body}`;
-    text += '\n\nThis is an automated email.';
+    text += '\n\nPlease visit https://1stwardym.com for more information. This is an automated email.';
+    smtpTransport.sendMail({
+        from: `${YOUR_NAME} ${EMAIL_ACCOUNT_USER}`,
+        to: user.email,
+        subject: 'Hillcrest Youth Activity',
+        text
+    }, (err) => {
+        if (err) console.log('email err', err);
+    });
+};
+
+const parentNotification = (user, post, dayOffset = false) => {
+    let text = `Regarding: ${user.name}\n\n\tThere's ${post.title} `;
+    if (dayOffset) user.alert_days += 1;
+    if (user.alert_days === 0) text += 'happening today';
+    else if (user.alert_days === 1) text += 'happening tomorrow';
+    else if (user.alert_days === 2) text += 'happening in 2 days';
+    else if (user.alert_days === 3) text += 'happening in 3 days';
+    if (post.activity !== 'Anouncement') text += ` meet  at ${post.start_time}. The activity details are: ${post.body}`;
+    text += '\n\nPlease visit https://1stwardym.com for more information. This is an automated email.';
     smtpTransport.sendMail({
         from: `${YOUR_NAME} ${EMAIL_ACCOUNT_USER}`,
         to: user.email,
@@ -75,5 +96,6 @@ module.exports = {
     sendDecision,
     sendErrorReport,
     editReq,
-    notification
+    notification,
+    parentNotification
 };

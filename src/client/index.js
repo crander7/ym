@@ -6,9 +6,9 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 import Routes from './routes';
 
 import './index.scss';
-// import registerServiceWorker from './registerServiceWorker';
+import registerServiceWorker from './registerServiceWorker';
 
 injectTapEventPlugin();
 
 ReactDOM.render(<Routes history={browserHistory} />, document.getElementById('root'));
-// registerServiceWorker();
+registerServiceWorker();

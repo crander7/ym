@@ -35,7 +35,7 @@
 
 .show {
     display: block;
-    padding: 0 15px;
+    padding: 0 15px 15px 15px;
 }
 
 .hide {
@@ -78,4 +78,23 @@
 .status-cont {
     display: table;
     margin: 0 auto 15px;
+}
+
+.delete-acct {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+}
+
+.parent-acct {
+    display: inline-block;
+    width: 50%;
+}
+
+.t-left {
+    text-align: left;
+}
+
+.t-right {
+    text-align: right;
 }

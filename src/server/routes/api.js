@@ -15,12 +15,15 @@ router.get('/getUser', authCheckMiddleware, apiCtrl.getUser);
 router.post('/addPost', authCheckMiddleware, apiCtrl.addPost);
 router.post('/handleEditReq', authCheckMiddleware, apiCtrl.handleEditReq);
 router.post('/tags/add', authCheckMiddleware, apiCtrl.addTag);
+router.post('/addKid', authCheckMiddleware, apiCtrl.addKid);
 
 /* PUT Endpoints */
 router.put('/updatePost', authCheckMiddleware, apiCtrl.updatePost);
 router.put('/updateUser', authCheckMiddleware, apiCtrl.updateUser);
+router.put('/setParent', authCheckMiddleware, apiCtrl.setParent);
 
 /* DELETE Endpoints */
 router.delete('/deletePost', authCheckMiddleware, apiCtrl.deletePost);
+router.delete('/account/:id', authCheckMiddleware, apiCtrl.deleteAccount);
 
 module.exports = router;

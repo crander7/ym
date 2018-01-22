@@ -1,6 +1,6 @@
 {
   "name": "ym",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": false,
   "license": "MIT",
   "dependencies": {
@@ -43,6 +43,7 @@
     "jest": "20.0.4",
     "jsonwebtoken": "^8.0.0",
     "jwt-decode": "^2.2.0",
+    "konphyg": "^1.4.0",
     "material-ui": "^0.19.0",
     "nodemailer": "^4.1.1",
     "nodemon": "^1.12.1",
@@ -85,7 +86,8 @@
     "server": "nodemon src/server/server.js",
     "client": "node config/scripts/start.js",
     "build": "node config/scripts/build.js",
-    "start": "node src/server/server.js",
+    "start-local": "node src/server/server.js",
+    "start": "NODE_ENV=production pm2 start src/server/server.js",
     "test": "node scripts/test.js --env=jsdom"
   },
   "jest": {
