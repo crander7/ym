@@ -178,7 +178,6 @@ const sendGroupMessage = async (req, res) => {
 const getAllUsers = async (req, res) => {
     try {
         const data = await userModel.getAllUsers4Message();
-        console.log(data);
         res.json({ success: true, users: data });
     } catch (e) {
         res.json({ error: e });
