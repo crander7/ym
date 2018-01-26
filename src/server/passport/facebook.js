@@ -17,9 +17,11 @@ module.exports = new FacebookStrategy({
     } catch (e) {
         if (e === 'No User Found') {
             try {
+                console.log('profile', profile);
                 user = await userModel.addSocialUser('fb', profile);
                 if (typeof user === 'object') user.new = true;
             } catch (err) {
+                console.log('db add fb', err);
                 done(err);
             }
         } else done(e);

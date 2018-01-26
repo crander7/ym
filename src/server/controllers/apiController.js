@@ -158,6 +158,34 @@ const addKid = async (req, res) => {
     }
 };
 
+const sendGroupMessage = async (req, res) => {
+    try {
+        const users = req.body.users;
+        if (users) {
+            users.map((user) => { // eslint-disable-line
+                if (user.alerts === 'text') {
+                    if (user.phone) text.spam(req.body.message, user.phone);
+                } else if (user.email) email.spam(req.body.message, user.email);
+            });
+        }
+        res.json({ success: true });
+    } catch (e) {
+        res.json({ error: e });
+        email.sendErrorReport(e, 'sendGroupMessage');
+    }
+};
+
+const getAllUsers = async (req, res) => {
+    try {
+        const data = await userModel.getAllUsers4Message();
+        console.log(data);
+        res.json({ success: true, users: data });
+    } catch (e) {
+        res.json({ error: e });
+        email.sendErrorReport(e, 'getAllUsers4Message');
+    }
+};
+
 module.exports = {
     addPost,
     getUpcomingPosts,
@@ -172,5 +200,7 @@ module.exports = {
     addTag,
     deleteAccount,
     setParent,
-    addKid
+    addKid,
+    sendGroupMessage,
+    getAllUsers
 };

@@ -10,12 +10,14 @@ router.get('/getArchivePosts', apiCtrl.getArchivePosts);
 router.get('/getPost/:id', authCheckMiddleware, apiCtrl.getPost);
 router.get('/getEditReqs', authCheckMiddleware, apiCtrl.getEditReqs);
 router.get('/getUser', authCheckMiddleware, apiCtrl.getUser);
+router.get('/getAllUsers', authCheckMiddleware, apiCtrl.getAllUsers);
 
 /* POST Endpoints */
 router.post('/addPost', authCheckMiddleware, apiCtrl.addPost);
 router.post('/handleEditReq', authCheckMiddleware, apiCtrl.handleEditReq);
 router.post('/tags/add', authCheckMiddleware, apiCtrl.addTag);
 router.post('/addKid', authCheckMiddleware, apiCtrl.addKid);
+router.post('/sendGroupMessage', authCheckMiddleware, apiCtrl.sendGroupMessage);
 
 /* PUT Endpoints */
 router.put('/updatePost', authCheckMiddleware, apiCtrl.updatePost);

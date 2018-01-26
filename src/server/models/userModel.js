@@ -42,21 +42,24 @@ const addLocalUser = data => new Promise(async (resolve, reject) => {
 
 const addSocialUser = (network, profile) => new Promise(async (resolve, reject) => {
     let client = null;
-    if (network === 'ig') {
-        profile.photos = [{ value: profile._json.data.profile_picture }]; // eslint-disable-line
-        profile.emails = [{ value: null }];
-    }
-    try {
-        client = await pool.connect();
-        const q = `INSERT INTO users (first_name, last_name, display_name, ${network}_photo, email, ${network}_id) VALUES ($$${profile.name.givenName}$$, $$${profile.name.familyName}$$, $$${profile.displayName}$$, $$${profile.photos[0].value}$$, $$${profile.emails[0].value}$$, $$${profile.id}$$) ON CONFLICT (email) DO UPDATE SET ${network}_id = EXCLUDED.${network}_id, ${network}_photo = EXCLUDED.${network}_photo RETURNING *;`;
-        const res = await client.query(q);
-        client.release();
-        if (res.rows[0]) resolve(res.rows[0]);
-        else reject('No User Found');
-    } catch (e) {
-        if (client) client.release();
-        const error = `db error in addSocialUser on ${profile.provider}: ${JSON.stringify(e)}`;
-        reject(error);
+    if (!network || !profile.name || !profile.name.givenName || !profile.name.familyName || !profile.displayName || !profile.photos || !profile.photos[0] || !profile.photos[0].value || !profile.emails || !profile.emails[0] || !profile.emails[0].value || !profile.id) {
+        if (!profile.name || !profile.name.givenName || !profile.name.familyName || !profile.displayName) reject({ err: 'Account issue', reason: 'name' });
+        else if (!profile.photos || !profile.photos[0] || !profile.photos[0].value) reject({ err: 'Account issue', reason: 'photo' });
+        else if (!profile.emails || !profile.emails[0] || !profile.emails[0].value) reject({ err: 'Account issue', reason: 'email' });
+        else reject({ err: 'Account issue', reason: 'other' });
+    } else {
+        try {
+            client = await pool.connect();
+            const q = `INSERT INTO users (first_name, last_name, display_name, ${network}_photo, email, ${network}_id) VALUES ($$${profile.name.givenName}$$, $$${profile.name.familyName}$$, $$${profile.displayName}$$, $$${profile.photos[0].value}$$, $$${profile.emails[0].value}$$, $$${profile.id}$$) ON CONFLICT (email) DO UPDATE SET ${network}_id = EXCLUDED.${network}_id, ${network}_photo = EXCLUDED.${network}_photo RETURNING *;`;
+            const res = await client.query(q);
+            client.release();
+            if (res.rows[0]) resolve(res.rows[0]);
+            else reject({ err: 'No User Found', reason: null });
+        } catch (e) {
+            if (client) client.release();
+            const error = `db error in addSocialUser on ${profile.provider}: ${e}`;
+            reject({ err: error, reason: null });
+        }
     }
 });
 
@@ -191,6 +194,21 @@ const getAllUsers = () => new Promise(async (resolve, reject) => {
     } catch (e) {
         if (client) client.release();
         const error = `db error in getAllUsers ${JSON.stringify(e)}`;
+        reject(error);
+    }
+});
+
+const getAllUsers4Message = () => new Promise(async (resolve, reject) => {
+    let client = null;
+    try {
+        client = await pool.connect();
+        const qs = 'SELECT first_name, last_name, id, email, phone, alerts FROM users;';
+        const res = await client.query(qs);
+        client.release();
+        resolve(res.rows);
+    } catch (e) {
+        if (client) client.release();
+        const error = `db error in getAllUsers4Message ${JSON.stringify(e)}`;
         reject(error);
     }
 });
@@ -335,5 +353,6 @@ module.exports = {
     removeChild,
     addKid,
     setParent,
-    getChildren
+    getChildren,
+    getAllUsers4Message
 };

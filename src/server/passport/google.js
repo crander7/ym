@@ -16,9 +16,11 @@ module.exports = new GoogleStrategy({
     } catch (e) {
         if (e === 'No User Found') {
             try {
+                console.log('profile', profile);
                 user = await userModel.addSocialUser('g', profile);
                 if (typeof user === 'object') user.new = true;
             } catch (err) {
+                console.log('db add google', err);
                 done(err);
             }
         } else done(e);

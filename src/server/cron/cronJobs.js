@@ -9,9 +9,16 @@ const reminders = new CronJob({
     cronTime: '00 00 * * * *',
     onTick: async () => {
         console.log('Notificatin cron started');
+        let hour;
+        let today;
         const day = new Date();
-        const today = day.getDate();
-        const hour = day.getHours();
+        if (day.getHours() <= 1) today = day.getDate() - 1;
+        else today = day.getDate();
+        if (day.getHours() <= 21) hour = day.getHours() + 2;
+        else {
+            if (day.getHours() === 22) hour = 0;
+            if (day.getHours() === 23) hour = 1;
+        }
         day.setDate(day.getDate() - 1);
         day.setHours(0, 0, 0);
         const sameDay = [];
@@ -57,20 +64,12 @@ const reminders = new CronJob({
                 if (dayBefore[i].alerts === 'email' && dayBefore[i].alert_hour && dayBefore[i].alert_days && (tomorrow[j].groups.indexOf(dayBefore[i].class) !== -1 || dayBefore[i].class === 'Adults' || tomorrow[i].groups[0] === 'All Young Men') && !activityNotificationThreshold(tomorrow[j].start_time, dayBefore[i].alert_hour)) email.notification(dayBefore[i], tomorrow[j]);
                 else if (dayBefore[i].alerts === 'text' && dayBefore[i].alert_hour && dayBefore[i].alert_days && (tomorrow[j].groups.indexOf(dayBefore[i].class) !== -1 || dayBefore[i].class === 'Adults' || tomorrow[i].groups[0] === 'All Young Men') && !activityNotificationThreshold(tomorrow[j].start_time, dayBefore[i].alert_hour)) text.notification(dayBefore[i], tomorrow[j]);
             }
-            // for (let j = 0; j < twoDaysFromNow.length; j += 1) {
-            //     if (dayBefore[i].alerts === 'email' && dayBefore[i].alert_hour && dayBefore[i].alert_days && (twoDaysFromNow[j].groups.indexOf(dayBefore[i].class) !== -1 || dayBefore[i].class === 'Adults') && activityNotificationThreshold(twoDaysFromNow[j].start_time, dayBefore[i].alert_hour)) email.notification(dayBefore[i], twoDaysFromNow[j]);
-            //     else if (dayBefore[i].alerts === 'text' && dayBefore[i].alert_hour && dayBefore[i].alert_days && (twoDaysFromNow[j].groups.indexOf(dayBefore[i].class) !== -1 || dayBefore[i].class === 'Adults') && activityNotificationThreshold(twoDaysFromNow[j].start_time, dayBefore[i].alert_hour)) text.notification(dayBefore[i], twoDaysFromNow[j]);
-            // }
         }
         for (let i = 0; i < twoDaysBefore.length; i += 1) {
             for (let j = 0; j < twoDaysFromNow.length; j += 1) {
                 if (twoDaysBefore[i].alerts === 'email' && twoDaysBefore[i].alert_hour && twoDaysBefore[i].alert_days && (twoDaysFromNow[j].groups.indexOf(twoDaysBefore[i].class) !== -1 || twoDaysBefore[i].class === 'Adults' || twoDaysFromNow[i].groups[0] === 'All Young Men') && !activityNotificationThreshold(twoDaysFromNow[j].start_time, twoDaysBefore[i].alert_hour)) email.notification(twoDaysBefore[i], twoDaysFromNow[j]);
                 else if (twoDaysBefore[i].alerts === 'text' && twoDaysBefore[i].alert_hour && twoDaysBefore[i].alert_days && (twoDaysFromNow[j].groups.indexOf(twoDaysBefore[i].class) !== -1 || twoDaysBefore[i].class === 'Adults' || twoDaysFromNow[i].groups[0] === 'All Young Men') && !activityNotificationThreshold(twoDaysFromNow[j].start_time, twoDaysBefore[i].alert_hour)) text.notification(twoDaysBefore[i], twoDaysFromNow[j]);
             }
-            // for (let j = 0; j < threeDaysFromNow.length; j += 1) {
-            //     if (twoDaysBefore[i].alerts === 'email' && twoDaysBefore[i].alert_hour && twoDaysBefore[i].alert_days && (tomorrow[j].groups.indexOf(twoDaysBefore[i].class) !== -1 || twoDaysBefore[i].class === 'Adults') && activityNotificationThreshold(threeDaysFromNow[j].start_time, twoDaysBefore[i].alert_hour)) email.notification(twoDaysBefore[i], threeDaysFromNow[j]);
-            //     else if (twoDaysBefore[i].alerts === 'text' && twoDaysBefore[i].alert_hour && twoDaysBefore[i].alert_days && (threeDaysFromNow[j].groups.indexOf(twoDaysBefore[i].class) !== -1 || twoDaysBefore[i].class === 'Adults') && activityNotificationThreshold(threeDaysFromNow[j].start_time, twoDaysBefore[i].alert_hour)) text.notification(twoDaysBefore[i], threeDaysFromNow[j]);
-            // }
         }
         for (let i = 0; i < threeDaysBefore.length; i += 1) {
             for (let j = 0; j < threeDaysFromNow.length; j += 1) {
@@ -112,20 +111,12 @@ const reminders = new CronJob({
                 if (dayBefore[i].alerts === 'email' && dayBefore[i].alert_hour.toString() && dayBefore[i].alert_days && (tomorrow[j].groups.indexOf(dayBefore[i].class) !== -1 || dayBefore[i].class === 'Adults' || tomorrow[i].groups[0] === 'All Young Men') && !activityNotificationThreshold(tomorrow[j].start_time, dayBefore[i].alert_hour)) email.parentNotification(dayBefore[i], tomorrow[j]);
                 else if (dayBefore[i].alerts === 'text' && dayBefore[i].alert_hour.toString() && dayBefore[i].alert_days && (tomorrow[j].groups.indexOf(dayBefore[i].class) !== -1 || dayBefore[i].class === 'Adults' || tomorrow[i].groups[0] === 'All Young Men') && !activityNotificationThreshold(tomorrow[j].start_time, dayBefore[i].alert_hour)) text.parentNotification(dayBefore[i], tomorrow[j]);
             }
-            // for (let j = 0; j < twoDaysFromNow.length; j += 1) {
-            //     if (dayBefore[i].alerts === 'email' && dayBefore[i].alert_hour.toString() && dayBefore[i].alert_days && (twoDaysFromNow[j].groups.indexOf(dayBefore[i].class) !== -1 || dayBefore[i].class === 'Adults') && activityNotificationThreshold(twoDaysFromNow[j].start_time, dayBefore[i].alert_hour)) email.parentNotification(dayBefore[i], twoDaysFromNow[j]);
-            //     else if (dayBefore[i].alerts === 'text' && dayBefore[i].alert_hour.toString() && dayBefore[i].alert_days && (twoDaysFromNow[j].groups.indexOf(dayBefore[i].class) !== -1 || dayBefore[i].class === 'Adults') && activityNotificationThreshold(twoDaysFromNow[j].start_time, dayBefore[i].alert_hour)) text.parentNotification(dayBefore[i], twoDaysFromNow[j]);
-            // }
         }
         for (let i = 0; i < twoDaysBefore.length; i += 1) {
             for (let j = 0; j < twoDaysFromNow.length; j += 1) {
                 if (twoDaysBefore[i].alerts === 'email' && twoDaysBefore[i].alert_hour.toString() && twoDaysBefore[i].alert_days && (twoDaysFromNow[j].groups.indexOf(twoDaysBefore[i].class) !== -1 || twoDaysBefore[i].class === 'Adults' || twoDaysFromNow[i].groups[0] === 'All Young Men') && !activityNotificationThreshold(twoDaysFromNow[j].start_time, twoDaysBefore[i].alert_hour)) email.parentNotification(twoDaysBefore[i], twoDaysFromNow[j]);
                 else if (twoDaysBefore[i].alerts === 'text' && twoDaysBefore[i].alert_hour.toString() && twoDaysBefore[i].alert_days && (twoDaysFromNow[j].groups.indexOf(twoDaysBefore[i].class) !== -1 || twoDaysBefore[i].class === 'Adults' || twoDaysFromNow[i].groups[0] === 'All Young Men') && !activityNotificationThreshold(twoDaysFromNow[j].start_time, twoDaysBefore[i].alert_hour)) text.parentNotification(twoDaysBefore[i], twoDaysFromNow[j]);
             }
-            // for (let j = 0; j < threeDaysFromNow.length; j += 1) {
-            //     if (twoDaysBefore[i].alerts === 'email' && twoDaysBefore[i].alert_hour.toString() && twoDaysBefore[i].alert_days && (tomorrow[j].groups.indexOf(twoDaysBefore[i].class) !== -1 || twoDaysBefore[i].class === 'Adults') && activityNotificationThreshold(threeDaysFromNow[j].start_time, twoDaysBefore[i].alert_hour)) email.parentNotification(twoDaysBefore[i], threeDaysFromNow[j]);
-            //     else if (twoDaysBefore[i].alerts === 'text' && twoDaysBefore[i].alert_hour.toString() && twoDaysBefore[i].alert_days && (threeDaysFromNow[j].groups.indexOf(twoDaysBefore[i].class) !== -1 || twoDaysBefore[i].class === 'Adults') && activityNotificationThreshold(threeDaysFromNow[j].start_time, twoDaysBefore[i].alert_hour)) text.parentNotification(twoDaysBefore[i], threeDaysFromNow[j]);
-            // }
         }
         for (let i = 0; i < threeDaysBefore.length; i += 1) {
             for (let j = 0; j < threeDaysFromNow.length; j += 1) {

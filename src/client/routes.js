@@ -13,7 +13,9 @@ import SignUp from './components/SignUpPage/SignUpPage';
 import Login from './components/LoginPage/LoginPage';
 import Admin from './components/AdminPage/AdminPage';
 import Account from './components/Account/Account';
+import Spam from './components/Spam/Spam';
 import Denied from './components/Denied/Denied';
+import LoginFail from './components/LoginFail/LoginFail';
 import NotFound from './components/NotFound/NotFound';
 
 export default (props) => {
@@ -110,11 +112,13 @@ export default (props) => {
                     path="/addToken"
                     onEnter={(nextState, replace) => {
                         const query = nextState.location.query;
-                        if (query.success) {
+                        if (query.success === 'true') {
                             Auth.authenticateUser(query.token);
                             if (query.newUser === 'true') replace({ pathname: '/account' });
                             else replace({ pathname: '/' });
-                        } else replace({ pathname: '/login' });
+                        } else {
+                            replace({ pathname: '/loginFail', state: query.message });
+                        }
                     }}
                 />
                 <Route
@@ -130,6 +134,12 @@ export default (props) => {
                     getUser={Auth.isUserAuthenticated}
                 />
                 <Route
+                    path="/spam"
+                    component={Spam}
+                    onEnter={checkAdmin}
+                    getUser={Auth.isUserAuthenticated}
+                />
+                <Route
                     path="/logout"
                     onEnter={(nextState, replace) => {
                         Auth.deauthenticateUser();
@@ -139,6 +149,10 @@ export default (props) => {
                 <Route
                     path="/denied"
                     component={Denied}
+                />
+                <Route
+                    path="/loginFail"
+                    component={LoginFail}
                 />
                 <Route
                     path="*"

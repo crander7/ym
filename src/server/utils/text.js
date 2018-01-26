@@ -23,7 +23,7 @@ const notification = (user, post, dayOffset = false) => {
     else if (user.alert_days === 1) body += 'tomorrow.';
     else if (user.alert_days === 2) body += 'in 2 days.';
     else if (user.alert_days === 3) body += 'in 3 days.';
-    body += 'Visit https://1stwardym.com for more information.';
+    body += ' Visit https://1stwardym.com for more information.';
     twilio.messages.create({
         to: user.phone,
         from: config.twilio.phoneNumber,
@@ -51,8 +51,19 @@ const parentNotification = (user, post, dayOffset = false) => {
     });
 };
 
+const spam = (message, phone) => {
+    twilio.messages.create({
+        to: phone,
+        from: config.twilio.phoneNumber,
+        body: message
+    }, (err) => {
+        if (err) console.log('text err groupmsg', err);
+    });
+};
+
 module.exports = {
     sendDecision,
     notification,
-    parentNotification
+    parentNotification,
+    spam
 };

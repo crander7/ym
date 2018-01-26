@@ -92,10 +92,22 @@ const parentNotification = (user, post, dayOffset = false) => {
     });
 };
 
+const spam = (message, email) => {
+    smtpTransport.sendMail({
+        from: `${YOUR_NAME} ${EMAIL_ACCOUNT_USER}`,
+        to: email,
+        subject: 'Hillcrest Youth',
+        text: message
+    }, (err) => {
+        if (err) console.log('email err groupmsg', err);
+    });
+};
+
 module.exports = {
     sendDecision,
     sendErrorReport,
     editReq,
     notification,
-    parentNotification
+    parentNotification,
+    spam
 };

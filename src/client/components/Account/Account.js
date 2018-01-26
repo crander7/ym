@@ -144,28 +144,42 @@ export default class Account extends Component {
         this.setState({ user, changed: true });
     }
     async handleProfileSave() {
-        const res = await axios({
-            method: 'PUT',
-            url: '/api/updateUser',
-            headers: { Authorization: `bearer ${Auth.getToken()}` },
-            data: { ...this.state.user }
-        });
-        if (res.data.success) {
-            this.setState({
-                openDialog: true,
-                dialogMsg: 'You\'re changes have been saved',
-                dialogTitle: 'Success',
-                changed: false
+        const { user } = this.state;
+        let phone = user.phone;
+        phone = phone.replace(/[-,\s,(,)]/g, '');
+        if (phone.length === 10 || phone.length === 11) {
+            user.phone = phone;
+            this.setState({ user });
+            const res = await axios({
+                method: 'PUT',
+                url: '/api/updateUser',
+                headers: { Authorization: `bearer ${Auth.getToken()}` },
+                data: { ...this.state.user }
             });
-        } else if (res.data.error) {
+            if (res.data.success) {
+                this.setState({
+                    openDialog: true,
+                    dialogMsg: 'You\'re changes have been saved',
+                    dialogTitle: 'Success',
+                    changed: false
+                });
+            } else if (res.data.error) {
+                this.setState({
+                    openDialog: true,
+                    dialogTitle: 'Error',
+                    dialogMsg: 'There was an error saving your data. Try again later.'
+                });
+            } else if (res.data) {
+                this.setState({
+                    errors: res.data.errors
+                });
+            }
+        } else {
             this.setState({
+                tempPhone: '',
                 openDialog: true,
-                dialogTitle: 'Error',
-                dialogMsg: 'There was an error saving your data. Try again later.'
-            });
-        } else if (res.data) {
-            this.setState({
-                errors: res.data.errors
+                dialogMsg: 'Invalid phone number. Must include area code.',
+                dialogTitle: 'Error'
             });
         }
     }

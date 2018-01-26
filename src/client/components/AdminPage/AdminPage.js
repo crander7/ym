@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import ReactTooltip from 'react-tooltip';
+import { Link } from 'react-router';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
 import Menu from 'material-ui/svg-icons/navigation/apps';
 import Approve from 'material-ui/svg-icons/action/thumb-up';
@@ -151,6 +152,13 @@ export default class AdminPage extends Component {
                 </Table>}
                 <ReactTooltip />
                 {!this.state.editReqs && <h2 style={{ textAlign: 'center' }}>No Requests Currently</h2>}
+                <div style={{ position: 'absolute', bottom: '10px', left: '27%' }}>
+                    <Link
+                        to="/spam"
+                    >
+                        <FlatButton label="Group Messager" primary />
+                    </Link>
+                </div>
                 <Drawer
                     user={this.props.route.getUser()}
                     openDrawer={this.state.openDrawer}

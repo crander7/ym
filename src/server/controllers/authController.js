@@ -34,12 +34,25 @@ const facebook = (req, res, next) => {
 const fbCallback = (req, res, next) => {
     passport.authenticate('facebook', async (err, token, userData) => {
         let query = querystring.stringify({ success: false });
-        if (err) {
+        if (err && typeof err === 'string') {
             query = querystring.stringify({
                 success: false,
                 message: 'Facebook encountered an error.'
             });
-            email.sendErrorReport(`Facebook encountered and error ${err}`, 'fbCallback');
+            email.sendErrorReport(`Facebook encountered an error ${err}`, 'fbCallback');
+        } else if (err && typeof err === 'object') {
+            if (err.err === 'Account issue') {
+                query = querystring.stringify({
+                    success: false,
+                    message: `There was an ${err.err} related to your facebook account ${err.reason}`
+                });
+            } else {
+                query = querystring.stringify({
+                    success: false,
+                    message: 'Facebook encountered an error.'
+                });
+            }
+            email.sendErrorReport(`Facebook encountered an error ${err.err} with ${err.reason}`, 'fbCallback2');
         } else {
             query = querystring.stringify({
                 success: true,
@@ -69,12 +82,25 @@ const google = (req, res, next) => {
 const googleCb = (req, res, next) => {
     passport.authenticate('google', async (err, token, userData) => {
         let query = querystring.stringify({ success: false });
-        if (err) {
+        if (err && typeof err === 'string') {
             query = querystring.stringify({
                 success: false,
                 message: 'Google encountered an error.'
             });
             email.sendErrorReport(`Google encountered and error ${err}`, 'googleCb');
+        } else if (err && typeof err === 'object') {
+            if (err.err === 'Account issue') {
+                query = querystring.stringify({
+                    success: false,
+                    message: `There was an ${err.err} related to your google account ${err.reason}`
+                });
+            } else {
+                query = querystring.stringify({
+                    success: false,
+                    message: 'Google encountered an error.'
+                });
+            }
+            email.sendErrorReport(`Google encountered an error ${err.err} with ${err.reason}`, 'googleCb2');
         } else {
             query = querystring.stringify({
                 success: true,
