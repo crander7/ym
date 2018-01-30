@@ -8,18 +8,18 @@ const text = require('./../utils/text');
 const reminders = new CronJob({
     cronTime: '00 00 * * * *',
     onTick: async () => {
-        console.log('Notificatin cron started');
-        // let hour;
+        // console.log('Notificatin cron started');
+        let hour;
         let today;
         const day = new Date();
-        if (day.getHours() <= 1) today = day.getDate() - 1;
-        else today = day.getDate();
-        // if (day.getHours()= 21) 
-        const hour = day.getHours() - 2;
-        // else {
-        //     if (day.getHours() === 22) hour = 0;
-        //     if (day.getHours() === 23) hour = 1;
-        // }
+        if (day.getHours() <= 1) {
+            today = day.getDate() - 1;
+            if (day.getHours() === 1) hour = 23;
+            if (day.getHours() === 0) hour = 22;
+        } else {
+            today = day.getDate();
+            hour = day.getHours() - 2;
+        }
         day.setDate(day.getDate() - 1);
         day.setHours(0, 0, 0);
         const sameDay = [];
@@ -80,7 +80,7 @@ const reminders = new CronJob({
         }
 
         // Start cron for parents
-        console.log('Started parent notification cron');
+        // console.log('Started parent notification cron');
         sameDay.length = 0;
         dayBefore.length = 0;
         twoDaysBefore.length = 0;
@@ -125,7 +125,7 @@ const reminders = new CronJob({
                 else if (threeDaysBefore[i].alerts === 'text' && threeDaysBefore[i].alert_hour.toString() && threeDaysBefore[i].alert_days && (threeDaysFromNow[j].groups.indexOf(threeDaysBefore[i].class) !== -1 || threeDaysBefore[i].class === 'Adults' || threeDaysFromNow[i].groups[0] === 'All Young Men') && !activityNotificationThreshold(threeDaysFromNow[j].start_time, threeDaysBefore[i].alert_hour)) text.parentNotification(threeDaysBefore[i], threeDaysFromNow[j]);
             }
         }
-        console.log('Notification cron done!');
+        // console.log('Notification cron done!');
     },
     start: true,
     timeZone: 'America/Denver',
@@ -135,7 +135,7 @@ const reminders = new CronJob({
 const classSpot = new CronJob({
     cronTime: '00 05 00 * * *',
     onTick: async () => {
-        console.log('Started class cron');
+        // console.log('Started class cron');
         let users = [];
         const tempDate = new Date();
         tempDate.setFullYear(tempDate.getFullYear() - 12);
@@ -182,7 +182,7 @@ const classSpot = new CronJob({
             await userModel.updateUserClass(adults[i]); // eslint-disable-line
         }
         // Start cron for children class
-        console.log('Started children class cron');
+        // console.log('Started children class cron');
         try {
             users = await userModel.getAllChildren();
         } catch (e) {
@@ -218,7 +218,7 @@ const classSpot = new CronJob({
             adults2[i].class = 'Adults';
             await userModel.updateChildrenClass(adults2[i]); // eslint-disable-line
         }
-        console.log('Class cron done');
+        // console.log('Class cron done');
     },
     start: true,
     timeZone: 'America/Denver',
