@@ -9,16 +9,17 @@ const reminders = new CronJob({
     cronTime: '00 00 * * * *',
     onTick: async () => {
         console.log('Notificatin cron started');
-        let hour;
+        // let hour;
         let today;
         const day = new Date();
         if (day.getHours() <= 1) today = day.getDate() - 1;
         else today = day.getDate();
-        if (day.getHours() <= 21) hour = day.getHours() - 2;
-        else {
-            if (day.getHours() === 22) hour = 0;
-            if (day.getHours() === 23) hour = 1;
-        }
+        // if (day.getHours()= 21) 
+        const hour = day.getHours() - 2;
+        // else {
+        //     if (day.getHours() === 22) hour = 0;
+        //     if (day.getHours() === 23) hour = 1;
+        // }
         day.setDate(day.getDate() - 1);
         day.setHours(0, 0, 0);
         const sameDay = [];
