@@ -14,7 +14,7 @@ const reminders = new CronJob({
         const day = new Date();
         if (day.getHours() <= 1) today = day.getDate() - 1;
         else today = day.getDate();
-        if (day.getHours() <= 21) hour = day.getHours() + 2;
+        if (day.getHours() <= 21) hour = day.getHours() - 2;
         else {
             if (day.getHours() === 22) hour = 0;
             if (day.getHours() === 23) hour = 1;
