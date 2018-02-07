@@ -31,6 +31,7 @@ module.exports = new PassportLocalStrategy({
                 error.name = 'IncorrectCredentialsError';
                 done(error);
             } else {
+                console.log(`${user.display_name} signed in locally`);
                 const { token, data } = jwt.signer(user);
                 done(null, token, data);
             }

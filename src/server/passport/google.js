@@ -26,6 +26,7 @@ module.exports = new GoogleStrategy({
         } else done(e);
     }
     if (user) {
+        console.log(`${user.display_name} signed in on google`);
         const { token, data } = jwt.signer(user);
         done(null, token, data);
     } else done('User not found');

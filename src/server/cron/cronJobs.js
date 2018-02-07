@@ -56,8 +56,8 @@ const reminders = new CronJob({
                 else if (sameDay[i].alerts === 'text' && sameDay[i].alert_hour && (sameDay[i].alert_days.toString()) && (todayPosts[j].groups.indexOf(sameDay[i].class) !== -1 || sameDay[i].class === 'Adults' || todayPosts[i].groups[0] === 'All Young Men') && !activityNotificationThreshold(todayPosts[j].start_time, sameDay[i].alert_hour)) text.notification(sameDay[i], todayPosts[j]);
             }
             for (let j = 0; j < tomorrow.length; j += 1) {
-                if (sameDay[i].alerts === 'email' && sameDay[i].alert_hour && (sameDay[i].alert_days.toString()) && (tomorrow[j].groups.indexOf(sameDay[i].class) !== -1 || sameDay[i].class === 'Adults' || tomorrow[i].groups[0] === 'All Young Men') && activityNotificationThreshold(tomorrow[j].start_time, sameDay[i].alert_hour)) email.notification(sameDay[i], tomorrow[j], true);
-                else if (sameDay[i].alerts === 'text' && sameDay[i].alert_hour && (sameDay[i].alert_days.toString()) && (tomorrow[j].groups.indexOf(sameDay[i].class) !== -1 || sameDay[i].class === 'Adults' || tomorrow[i].groups[0] === 'All Young Men') && activityNotificationThreshold(tomorrow[j].start_time, sameDay[i].alert_hour)) text.notification(sameDay[i], tomorrow[j], true);
+                if (sameDay[i].alerts === 'email' && sameDay[i].alert_hour && (sameDay[i].alert_days.toString()) && (tomorrow[j].groups.indexOf(sameDay[i].class) !== -1 || sameDay[i].class === 'Adults' || tomorrow[j].groups[0] === 'All Young Men') && activityNotificationThreshold(tomorrow[j].start_time, sameDay[i].alert_hour)) email.notification(sameDay[i], tomorrow[j], true);
+                else if (sameDay[i].alerts === 'text' && sameDay[i].alert_hour && (sameDay[i].alert_days.toString()) && (tomorrow[j].groups.indexOf(sameDay[i].class) !== -1 || sameDay[i].class === 'Adults' || tomorrow[j].groups[0] === 'All Young Men') && activityNotificationThreshold(tomorrow[j].start_time, sameDay[i].alert_hour)) text.notification(sameDay[i], tomorrow[j], true);
             }
         }
         for (let i = 0; i < dayBefore.length; i += 1) {

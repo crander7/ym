@@ -38,14 +38,13 @@ process.on('uncaughtException', (err) => {
 
 process.on('unhandledRejection', (reason, place) => {
     console.log('unhandled', reason, place);
-    email.sendErrorReport(`error @ ${JSON.stringify(place)} reason ${reason}`, 'unhandledRejection');
+    email.sendErrorReport(`error @ ${place} reason ${reason}`, 'unhandledRejection');
 });
 
 cronJob.reminders.start();
 cronJob.classSpot.start();
 
 app.get('*', (req, res) => {
-    console.log('Hit get *');
     const filePath = `${__dirname}/../../build/index.html`;
     res.sendFile(path.resolve(filePath));
 });
