@@ -115,7 +115,7 @@ export default (props) => {
                         const query = nextState.location.query;
                         if (query.success === 'true') {
                             Auth.authenticateUser(query.token);
-                            if (query.newUser === 'true') replace({ pathname: '/account/new' });
+                            if (query.newUser === 'true') replace({ pathname: '/account' });
                             else replace({ pathname: '/' });
                         } else {
                             replace({ pathname: '/loginFail', state: query.message });
