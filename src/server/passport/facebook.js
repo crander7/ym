@@ -30,5 +30,5 @@ module.exports = new FacebookStrategy({
         console.log(`${user.display_name} signed in on fb`);
         const { token, data } = jwt.signer(user);
         done(null, token, data);
-    } else done('User not found');
+    }
 });
