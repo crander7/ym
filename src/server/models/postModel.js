@@ -61,7 +61,7 @@ const addPost = async (data) => {
             // newGroups.push(']');
             newGroups = `{${data.groups.join(', ')}}`;
         }
-        const qs = `INSERT INTO post (title, body, activity, groups, location, start_date, start_time) VALUES ($$${data.title}$$, $$${data.body}$$, $$${data.activity}$$, ${newGroups}, $$${data.location}$$, $$${data.launch}$$, $$${data.time}$$);`;
+        const qs = `INSERT INTO post (title, body, activity, groups, location, start_date, start_time) VALUES ($$${data.title}$$, $$${data.body}$$, $$${data.activity}$$, $$${newGroups}$$, $$${data.location}$$, $$${data.launch}$$, $$${data.time}$$);`;
         const { rows } = await pool.query(qs);
         return rows;
     } catch (e) {
