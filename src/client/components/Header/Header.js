@@ -31,5 +31,9 @@ export default class Header extends Component {
 }
 
 Header.propTypes = {
-    toggleDrawer: PropTypes.func.isRequired
+    toggleDrawer: PropTypes.func
+};
+
+Header.defaultProps = {
+    toggleDrawer: function noop() { }
 };

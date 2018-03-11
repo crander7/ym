@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-
+import Header from './../Header/Header';
 import './CheckinRes.scss';
 
 export default class CheckinRes extends Component {
@@ -27,20 +27,23 @@ export default class CheckinRes extends Component {
         else this.setState({ error: true });
         setTimeout(() => {
             window.close();
-        }, 2500);
+        }, 2000);
     }
     render() {
         const { done, error, previous } = this.state;
         return (
-            <div className="checkin-parent">
-                {(done && !error && !previous) ?
-                    <div className="checkin-text good">Check-in Success!</div> :
-                    (done && previous && !error) ?
-                        <div className="checkin-text">You were already checked-in</div> :
-                        (error) ?
-                            <div className="checkin-text error">There was an error checking in</div> :
-                            <div className="checkin-text">Checking In ...</div>
-                }
+            <div>
+                <Header />
+                <div className="checkin-parent">
+                    {(done && !error && !previous) ?
+                        <div className="checkin-text good">Check-in Success!</div> :
+                        (done && previous && !error) ?
+                            <div className="checkin-text">You were already checked-in</div> :
+                            (error) ?
+                                <div className="checkin-text error">There was an error checking in</div> :
+                                <div className="checkin-text">Checking In ...</div>
+                    }
+                </div>
             </div>
         );
     }
