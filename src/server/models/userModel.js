@@ -53,7 +53,8 @@ const addSocialUser = async (network, profile) => {
             error = { err: 'No User Found', reason: null };
             throw error;
         } catch (e) {
-            error = { err: `db error in addSocialUser on ${profile.provider}: ${e}`, reason: null };
+            if (e.reason !== undefined) error = e;
+            else error = { err: `db error in addSocialUser on ${profile.provider}: ${e}`, reason: null };
             throw error;
         }
     }
@@ -70,7 +71,9 @@ const getUserById = async (id) => {
         const error = 'No User Found';
         throw error;
     } catch (e) {
-        const error = `db error in getUserById ${JSON.stringify(e)}`;
+        let error;
+        if (e === 'No User Found') error = e;
+        else error = `db error in getUserById ${JSON.stringify(e)}`;
         throw error;
     }
 };
@@ -86,7 +89,9 @@ const getUserByEmail = async (email) => {
         const error = 'No User Found';
         throw error;
     } catch (e) {
-        const error = `db error in getUserByEmail ${JSON.stringify(e)}`;
+        let error;
+        if (e === 'No User Found') error = e;
+        else error = `db error in getUserByEmail ${JSON.stringify(e)}`;
         throw error;
     }
 };
@@ -102,7 +107,9 @@ const getUserBySocialId = async (network, id) => {
         const error = 'No User Found';
         throw error;
     } catch (e) {
-        const error = `db error in getUserByFbId ${JSON.stringify(e)}`;
+        let error;
+        if (e === 'No User Found') error = e;
+        else error = `db error in getUserBySocialId ${JSON.stringify(e)}`;
         throw error;
     }
 };
