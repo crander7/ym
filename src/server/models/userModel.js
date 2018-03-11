@@ -21,14 +21,11 @@ process.on('exit', () => {
 
 const addLocalUser = async (data) => {
     try {
-        const { rows } = await pool.query(`
-            INSERT INTO users (first_name, last_name, display_name, email, password, birthday) 
-                VALUES ($$${data.firstName}$$, $$${data.lastName}$$, $$${data.displayName}$$, $$${data.email}$$, $$${data.password}$$, '${data.dob}') 
-            ON CONFLICT (email) 
-                DO UPDATE
-                SET password = EXCLUDED.password, birthday = EXCLUDED.birthday
-                RETURNING *;
-        `);
+        const query = {
+            text: 'INSERT INTO users (first_name, last_name, display_name, email, password, birthday) VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (email) DO UPDATE SET password = EXCLUDED.password, birthday = EXCLUDED.birthday RETURNING *',
+            values: [data.firstName, data.lastName, data.displayName, data.email, data.password, data.dob]
+        };
+        const { rows } = await pool.query(query);
         return rows[0];
     } catch (e) {
         const error = `db error in addLocalUser ${JSON.stringify(e)}`;
@@ -47,8 +44,11 @@ const addSocialUser = async (network, profile) => {
         throw error;
     } else {
         try {
-            const q = `INSERT INTO users (first_name, last_name, display_name, ${network}_photo, email, ${network}_id) VALUES ($$${profile.name.givenName}$$, $$${profile.name.familyName}$$, $$${profile.displayName}$$, $$${profile.photos[0].value}$$, $$${profile.emails[0].value}$$, $$${profile.id}$$) ON CONFLICT (email) DO UPDATE SET ${network}_id = EXCLUDED.${network}_id, ${network}_photo = EXCLUDED.${network}_photo RETURNING *;`;
-            const { rows } = await pool.query(q);
+            const query = {
+                text: `INSERT INTO users (first_name, last_name, display_name, ${network}_photo, email, ${network}_id) VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (email) DO UPDATE SET ${network}_id = EXCLUDED.${network}_id, ${network}_photo = EXCLUDED.${network}_photo RETURNING *`,
+                values: [profile.name.givenName, profile.name.familyName, profile.displayName, profile.photos[0].value, profile.emails[0].value, profile.id]
+            };
+            const { rows } = await pool.query(query);
             if (rows[0]) return rows[0];
             error = { err: 'No User Found', reason: null };
             throw error;
@@ -61,7 +61,11 @@ const addSocialUser = async (network, profile) => {
 
 const getUserById = async (id) => {
     try {
-        const { rows } = await pool.query(`SELECT * FROM users WHERE id = ${id};`);
+        const query = {
+            text: 'SELECT * FROM users WHERE id = $1',
+            values: [id]
+        };
+        const { rows } = await pool.query(query);
         if (rows[0]) return rows[0];
         const error = 'No User Found';
         throw error;
@@ -73,7 +77,11 @@ const getUserById = async (id) => {
 
 const getUserByEmail = async (email) => {
     try {
-        const { rows } = await pool.query(`SELECT * FROM users WHERE email = $$${email}$$;`);
+        const query = {
+            text: 'SELECT * FROM users WHERE email = $1',
+            values: [email]
+        };
+        const { rows } = await pool.query(query);
         if (rows[0]) return rows[0];
         const error = 'No User Found';
         throw error;
@@ -85,7 +93,11 @@ const getUserByEmail = async (email) => {
 
 const getUserBySocialId = async (network, id) => {
     try {
-        const { rows } = await pool.query(`SELECT * FROM users WHERE ${network}_id = $$${id}$$;`);
+        const query = {
+            text: `SELECT * FROM users WHERE ${network}_id = $1`,
+            values: [id]
+        };
+        const { rows } = await pool.query(query);
         if (rows[0]) return rows[0];
         const error = 'No User Found';
         throw error;
@@ -106,10 +118,14 @@ const getEditReqs = async () => {
 };
 
 const updateEditReq = async (id, approved) => {
-    let query = '';
+    let text = '';
     try {
-        if (approved) query = `UPDATE users SET edit_req = false, account = 'editor' WHERE id = ${id} RETURNING alerts, phone, email, display_name;`;
-        else query = `UPDATE users SET edit_req = false WHERE id = ${id} RETURNING alerts, phone, email, display_name;`;
+        if (approved) text = 'UPDATE users SET edit_req = false, account = "editor" WHERE id = $1 RETURNING alerts, phone, email, display_name';
+        else text = 'UPDATE users SET edit_req = false WHERE id = $1 RETURNING alerts, phone, email, display_name';
+        const query = {
+            text,
+            values: [id]
+        };
         const { rows } = await pool.query(query);
         return rows[0];
     } catch (e) {
@@ -119,8 +135,13 @@ const updateEditReq = async (id, approved) => {
 };
 
 const updateUser = async (user) => {
+    // if (!user.phone) user.phone = null;
     try {
-        await pool.query(`UPDATE users SET display_name = $$${user.display_name}$$, first_name = $$${user.first_name}$$, last_name = $$${user.last_name}$$, phone = ${user.phone ? `${user.phone}` : null}, alerts = ${user.alerts ? `'${user.alerts}'` : null}, alert_days = ${user.alert_days}, alert_hour = ${user.alert_hour}, birthday = ${user.birthday ? `'${user.birthday}'` : null}, edit_req = ${user.edit_req} WHERE id = ${user.id};`); // eslint-disable-line
+        const query = {
+            text: 'UPDATE users SET display_name = $1, first_name = $2, last_name = $3, phone = $4, alerts = $5, alert_days = $6, alert_hour = $7, birthday = $8, edit_req = $9 WHERE id = $10',
+            values: [user.display_name, user.first_name, user.last_name, user.phone, user.alerts, user.alert_days, user.alert_hour, user.birthday, user.edit_req, user.id]
+        };
+        await pool.query(query);
         return true;
     } catch (e) {
         const error = `db error in updateUser ${JSON.stringify(e)}`;
@@ -130,8 +151,11 @@ const updateUser = async (user) => {
 
 const getAllUsers4Notifications = async (hour) => {
     try {
-        const qs = `SELECT id, alerts, alert_days, alert_hour, class, email, phone, display_name FROM users WHERE account != 'parent' AND alerts IN ('email', 'text') AND alert_hour = ${hour}`;
-        const { rows } = await pool.query(qs);
+        const query = {
+            text: 'SELECT id, alerts, alert_days, alert_hour, class, email, phone, display_name FROM users WHERE account != "parent" AND alerts IN ("email", "text") AND alert_hour = $1',
+            values: [hour]
+        };
+        const { rows } = await pool.query(query);
         return rows;
     } catch (e) {
         const error = `db error in getAllUsers4Notifications ${JSON.stringify(e)}`;
@@ -141,8 +165,11 @@ const getAllUsers4Notifications = async (hour) => {
 
 const getAllParents4Notification = async (hour) => {
     try {
-        const qs = `SELECT u.alerts, u.alert_days, u.alert_hour, c.id, c.class, c.name, u.phone, u.email FROM users AS u JOIN children AS c ON u.id = c.user_id WHERE u.account = 'parent' AND c.class IS NOT NULL AND u.alerts IN ('email', 'text') AND u.alert_hour = ${hour};`;
-        const { rows } = await pool.query(qs);
+        const query = {
+            text: 'SELECT u.alerts, u.alert_days, u.alert_hour, c.id, c.class, c.name, u.phone, u.email FROM users AS u JOIN children AS c ON u.id = c.user_id WHERE u.account = "parent" AND c.class IS NOT NULL AND u.alerts IN ("email", "text") AND u.alert_hour = $1',
+            values: [hour]
+        };
+        const { rows } = await pool.query(query);
         return rows;
     } catch (e) {
         const error = `db error in getAllParents4Notification ${JSON.stringify(e)}`;
@@ -152,7 +179,7 @@ const getAllParents4Notification = async (hour) => {
 
 const getAllUsers = async () => {
     try {
-        const qs = 'SELECT * FROM users WHERE class != \'Adults\' OR class IS NULL;';
+        const qs = 'SELECT * FROM users WHERE class != "Adults" OR class IS NULL';
         const { rows } = await pool.query(qs);
         return rows;
     } catch (e) {
@@ -163,7 +190,7 @@ const getAllUsers = async () => {
 
 const getAllUsers4Message = async () => {
     try {
-        const qs = 'SELECT first_name, last_name, id, email, phone, alerts FROM users;';
+        const qs = 'SELECT first_name, last_name, id, email, phone, alerts FROM users';
         const { rows } = await pool.query(qs);
         return rows;
     } catch (e) {
@@ -174,7 +201,7 @@ const getAllUsers4Message = async () => {
 
 const getAllChildren = async () => {
     try {
-        const qs = 'SELECT * FROM children WHERE class != \'Adults\' OR class IS NULL;';
+        const qs = 'SELECT * FROM children WHERE class != "Adults" OR class IS NULL';
         const { rows } = await pool.query(qs);
         return rows;
     } catch (e) {
@@ -185,8 +212,11 @@ const getAllChildren = async () => {
 
 const getChildren = async (id) => {
     try {
-        const qs = `SELECT * FROM children WHERE user_id = ${id};`;
-        const { rows } = await pool.query(qs);
+        const query = {
+            text: 'SELECT * FROM children WHERE user_id = $1',
+            values: [id]
+        };
+        const { rows } = await pool.query(query);
         return rows;
     } catch (e) {
         const error = `db error in getChildren ${JSON.stringify(e)}`;
@@ -196,8 +226,11 @@ const getChildren = async (id) => {
 
 const updateUserClass = async (user) => {
     try {
-        const qs = `UPDATE users SET class = '${user.class}' WHERE id = ${user.id};`;
-        await pool.query(qs);
+        const query = {
+            text: 'UPDATE users SET class = $1 WHERE id = $2',
+            values: [user.class, user.id]
+        };
+        await pool.query(query);
         return true;
     } catch (e) {
         const error = `db error in updateUserClass ${JSON.stringify(e)}`;
@@ -207,8 +240,11 @@ const updateUserClass = async (user) => {
 
 const updateChildrenClass = async (user) => {
     try {
-        const qs = `UPDATE children SET class = '${user.class}' WHERE id = ${user.id};`;
-        await pool.query(qs);
+        const query = {
+            text: 'UPDATE children SET class = $1 WHERE id = $2',
+            values: [user.class, user.id]
+        };
+        await pool.query(query);
         return true;
     } catch (e) {
         const error = `db error in updateChildrenClass ${JSON.stringify(e)}`;
@@ -218,7 +254,11 @@ const updateChildrenClass = async (user) => {
 
 const addKid = async (data) => {
     try {
-        const { rows } = await pool.query(`INSERT INTO children (name, dob, user_id) VALUES ($$${data.name}$$, '${data.dob}', ${data.id}) returning *;`);
+        const query = {
+            text: 'INSERT INTO children (name, dob, user_id) VALUES ($1, $2, $3) RETURNING *',
+            values: [data.name, data.dob, data.id]
+        };
+        const { rows } = await pool.query(query);
         return rows;
     } catch (e) {
         const error = `db error in addKid ${JSON.stringify(e)}`;
@@ -228,7 +268,11 @@ const addKid = async (data) => {
 
 const deleteAccount = async (id) => {
     try {
-        await pool.query(`DELETE FROM users WHERE id = ${id};`);
+        const query = {
+            text: 'DELETE FROM users WHERE id = $1',
+            values: [id]
+        };
+        await pool.query(query);
         return true;
     } catch (e) {
         const error = `db error in deleteAccount ${JSON.stringify(e)}`;
@@ -238,8 +282,11 @@ const deleteAccount = async (id) => {
 
 const removeChild = async (id) => {
     try {
-        const qs = `DELETE FROM children WHERE id = ${id};`;
-        await pool.query(qs);
+        const query = {
+            text: 'DELETE FROM children WHERE id = $1',
+            values: [id]
+        };
+        await pool.query(query);
         return true;
     } catch (e) {
         const error = `db error in removeChild ${JSON.stringify(e)}`;
@@ -251,8 +298,16 @@ const setParent = async (val, id) => {
     let status = 'user';
     if (val === 'parent') status = 'parent';
     try {
-        if (status === 'user') await pool.query(`DELETE FROM children WHERE user_id = ${id};`);
-        await pool.query(`UPDATE users SET account = '${status}' WHERE id = ${id};`);
+        const query = {
+            text: 'DELETE FROM children WHERE user_id = $1',
+            values: [id]
+        };
+        const query2 = {
+            text: 'UPDATE users SET account = $1 WHERE id = $2',
+            values: [status, id]
+        };
+        if (status === 'user') await pool.query(query);
+        await pool.query(query2);
         return true;
     } catch (e) {
         const error = `db error in setParent ${JSON.stringify(e)}`;
