@@ -25,19 +25,19 @@ export default class CheckinRes extends Component {
         else this.setState({ error: true });
         setTimeout(() => {
             window.close();
-        }, 1500);
+        }, 2500);
     }
     render() {
         const { done, error, previous } = this.state;
         return (
-            <div>
+            <div className="checkin-parent">
                 {(done && !error && !previous) ?
-                    <div>Check-in Success!</div> :
+                    <div className="checkin-text good">Check-in Success!</div> :
                     (done && previous && !error) ?
-                        <div>You were already checked-in</div> :
+                        <div className="checkin-text">You were already checked-in</div> :
                         (error) ?
-                            <div>There was an error checking in</div> :
-                            <div>Checking In ...</div>
+                            <div className="checkin-text error">There was an error checking in</div> :
+                            <div className="checkin-text">Checking In ...</div>
                 }
             </div>
         );

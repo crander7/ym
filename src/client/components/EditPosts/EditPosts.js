@@ -70,7 +70,7 @@ export default class EditPosts extends Component {
             Auth.deauthenticateUser();
             location.pathname = '/login';
         } else if (res.data.error) {
-            this.setState({ openDialog: false });
+            this.setState({ openDialog: true });
         }
     }
     async handleOldRequest() {
@@ -126,7 +126,7 @@ export default class EditPosts extends Component {
         if (res.data.success) {
             posts.splice(postIdx, 1);
             this.setState({ posts, postId: null, postIdx: null, deleteCheck: false, openSnack: true });
-        } else this.setState({ postId: null, postIdx: null, deleteCheck: false });
+        } else this.setState({ postId: null, postIdx: null, deleteCheck: false, openDialog: true });
     }
     render() {
         const { filteredPosts } = this.state;

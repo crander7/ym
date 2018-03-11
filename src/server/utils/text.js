@@ -23,7 +23,7 @@ const notification = (user, post, checkin, dayOffset = false) => {
     else if (user.alert_days === 1) body += 'tomorrow.';
     else if (user.alert_days === 2) body += 'in 2 days.';
     else if (user.alert_days === 3) body += 'in 3 days.';
-    body += ` You can check-in to the activity here: ${checkin}.`;
+    body += ` You can check-in to the activity here: ${checkin}.\n`;
     body += ' Visit https://1stwardym.com for more information.';
     twilio.messages.create({
         to: user.phone,
@@ -42,7 +42,7 @@ const parentNotification = (user, post, checkin, dayOffset = false) => {
     else if (user.alert_days === 1) body += 'tomorrow.';
     else if (user.alert_days === 2) body += 'in 2 days.';
     else if (user.alert_days === 3) body += 'in 3 days.';
-    body += ` You can RSVP for your child here: ${checkin}.`;
+    body += ` You can RSVP for your child here: ${checkin}.\n`;
     body += ` In regards to: ${user.name}. Visit https://1stwardym.com for more information.`;
     twilio.messages.create({
         to: user.phone,

@@ -19,7 +19,7 @@ const check4Token = async (req, res) => {
             error = e;
         }
     }
-    if (token) {
+    if (token && token.length >= 5) {
         res.json({ success: true });
     } else {
         res.json({ authError: true });

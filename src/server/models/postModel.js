@@ -19,50 +19,37 @@ process.on('exit', () => {
     pool.end();
 });
 
-const getUpcomingPosts = () => new Promise(async (resolve, reject) => {
-    let client = null;
+const getUpcomingPosts = async () => {
     try {
-        client = await pool.connect();
-        const res = await client.query("SELECT * FROM post WHERE start_date >= now() - INTERVAL '1 day';"); // eslint-disable-line
-        client.release();
-        resolve(res.rows);
+        const { rows } = await pool.query("SELECT * FROM post WHERE start_date >= now() - INTERVAL '1 day';"); // eslint-disable-line
+        return rows;
     } catch (e) {
-        if (client) client.release();
         const error = `db error in getPosts ${JSON.stringify(e)}`;
-        reject(error);
+        throw error;
     }
-});
+};
 
-const getArchivePosts = () => new Promise(async (resolve, reject) => {
-    let client = null;
+const getArchivePosts = async () => {
     try {
-        client = await pool.connect();
-        const res = await client.query("SELECT * FROM post WHERE start_date < now() - INTERVAL '1 day';"); // eslint-disable-line
-        client.release();
-        resolve(res.rows);
+        const { rows } = await pool.query("SELECT * FROM post WHERE start_date < now() - INTERVAL '1 day';"); // eslint-disable-line
+        return rows;
     } catch (e) {
-        if (client) client.release();
         const error = `db error in getPosts ${JSON.stringify(e)}`;
-        reject(error);
+        throw error;
     }
-});
+};
 
-const deletePost = id => new Promise(async (resolve, reject) => {
-    let client = null;
+const deletePost = async (id) => {
     try {
-        client = await pool.connect();
-        await client.query(`DELETE FROM post WHERE id = ${id};`);
-        client.release();
-        resolve();
+        await pool.query(`DELETE FROM post WHERE id = ${id};`);
+        return true;
     } catch (e) {
-        if (client) client.release();
         const error = `db error in deletePost ${JSON.stringify(e)}`;
-        reject(error);
+        throw error;
     }
-});
+};
 
-const addPost = data => new Promise(async (resolve, reject) => {
-    let client = null;
+const addPost = async (data) => {
     try {
         let newGroups = null;
         if (data.groups.length > 0) {
@@ -74,34 +61,26 @@ const addPost = data => new Promise(async (resolve, reject) => {
             newGroups.push(']');
             newGroups = newGroups.join('');
         }
-        client = await pool.connect();
         const qs = `INSERT INTO post (title, body, activity, groups, location, start_date, start_time) VALUES ($$${data.title}$$, $$${data.body}$$, $$${data.activity}$$, ${newGroups}, $$${data.location}$$, '${data.launch}', $$${data.time}$$);`;
-        const res = await client.query(qs);
-        client.release();
-        resolve(res.rows);
+        const { rows } = await pool.query(qs);
+        return rows;
     } catch (e) {
-        if (client) client.release();
         const error = `db error in addPost ${JSON.stringify(e)}`;
-        reject(error);
+        throw error;
     }
-});
+};
 
-const getPost = id => new Promise(async (resolve, reject) => {
-    let client = null;
+const getPost = async (id) => {
     try {
-        client = await pool.connect();
-        const res = await client.query(`SELECT * FROM post WHERE id = ${id}`);
-        client.release();
-        resolve(res.rows);
+        const { rows } = await pool.query(`SELECT * FROM post WHERE id = ${id}`);
+        return rows;
     } catch (e) {
-        if (client) client.release();
         const error = `db error in getPost ${JSON.stringify(e)}`;
-        reject(error);
+        throw error;
     }
-});
+};
 
-const updatePost = data => new Promise(async (resolve, reject) => {
-    let client = null;
+const updatePost = async (data) => {
     try {
         let newGroups = null;
         if (data.groups.length > 0) {
@@ -113,41 +92,32 @@ const updatePost = data => new Promise(async (resolve, reject) => {
             newGroups.push(']');
             newGroups = newGroups.join('');
         }
-        client = await pool.connect();
-        await client.query(`UPDATE post SET title = $$${data.title}$$, body = $$${data.body}$$, activity = $$${data.activity}$$, groups = ${newGroups}, start_date = '${data.launch}', start_time = $$${data.time}$$, location = $$${data.location}$$ WHERE id = ${data.postId}`);
-        client.release();
-        resolve();
+        await pool.query(`UPDATE post SET title = $$${data.title}$$, body = $$${data.body}$$, activity = $$${data.activity}$$, groups = ${newGroups}, start_date = '${data.launch}', start_time = $$${data.time}$$, location = $$${data.location}$$ WHERE id = ${data.postId}`);
+        return true;
     } catch (e) {
-        if (client) client.release();
         const error = `db error in updatePost ${JSON.stringify(e)}`;
-        reject(error);
+        throw error;
     }
-});
+};
 
-const getNext3DaysPosts = today => new Promise(async (resolve, reject) => {
-    let client = null;
+const getNext3DaysPosts = async (today) => {
     const threeDaysFromNow = new Date();
     threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
     threeDaysFromNow.setHours(0, 0, 0);
     try {
-        client = await pool.connect();
         const qs = `SELECT * FROM post WHERE ((SELECT EXTRACT(EPOCH FROM start_date) * 1000) BETWEEN ${today} AND ${threeDaysFromNow.getTime()});`;
-        const res = await client.query(qs);
-        client.release();
-        resolve(res.rows);
+        const { rows } = await pool.query(qs);
+        return rows;
     } catch (e) {
-        if (client) client.release();
         const error = `db error in getNext3DaysPosts ${JSON.stringify(e)}`;
-        reject(error);
+        throw error;
     }
-});
+};
 
-const addTag = body => new Promise(async (resolve, reject) => {
-    let client = null;
+const addTag = async (body) => {
     try {
-        client = await pool.connect();
-        const res = await client.query(`SELECT tags FROM post WHERE id = ${body.postId}`);
-        const row = res.rows[0];
+        const { rows } = await pool.query(`SELECT tags FROM post WHERE id = ${body.postId}`);
+        const row = rows[0];
         let tags = null;
         if (row.tags && row.tags.length > 0) {
             tags = row.tags.map((tag, idx) => {
@@ -161,26 +131,19 @@ const addTag = body => new Promise(async (resolve, reject) => {
             tags = `ARRAY ['${body.tag}']`;
         }
         const q = `UPDATE post SET tags = ${tags} WHERE id = ${body.postId}`;
-        await client.query(q);
-        client.release();
-        resolve();
-    } catch (e) {
-        if (client) client.release();
-        const error = `db error in addTag ${e}`;
-        reject(error);
-    }
-});
-
-const userCheckin = async (data) => {
-    console.log(data);
-    let client = null;
-    try {
-        client = await pool.connect();
-        await client.query(`INSERT INTO checkins (post_id, user_id) VALUES (${data.act}, ${data.user});`);
-        client.release();
+        await pool.query(q);
         return true;
     } catch (e) {
-        if (client) client.release();
+        const error = `db error in addTag ${e}`;
+        throw error;
+    }
+};
+
+const userCheckin = async (data) => {
+    try {
+        await pool.query(`INSERT INTO checkins (post_id, user_id) VALUES (${data.act}, ${data.user});`);
+        return true;
+    } catch (e) {
         if (JSON.stringify(e).indexOf('onecheckinperuser') !== -1) return false;
         const error = `db error in userCheckin ${JSON.stringify(e)}`;
         throw error;
@@ -188,14 +151,10 @@ const userCheckin = async (data) => {
 };
 
 const childCheckin = async (data) => {
-    let client = null;
     try {
-        client = await pool.connect();
-        await client.query(`INSERT INTO checkins (post_id, child_id) VALUES (${data.act}, ${data.user});`);
-        client.release();
+        await pool.query(`INSERT INTO checkins (post_id, child_id) VALUES (${data.act}, ${data.user});`);
         return true;
     } catch (e) {
-        if (client) client.release();
         if (JSON.stringify(e).indexOf('onecheckinperkid') !== -1) return false;
         const error = `db error in childCheckin ${JSON.stringify(e)}`;
         throw error;
