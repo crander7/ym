@@ -53,8 +53,14 @@ const addPost = async (data) => {
     try {
         let newGroups = null;
         if (data.groups.length > 0) newGroups = `{${data.groups.join(', ')}}`;
-        const qs = `INSERT INTO post (title, body, activity, groups, location, start_date, start_time) VALUES ($$${data.title}$$, $$${data.body}$$, $$${data.activity}$$, $$${newGroups}$$, $$${data.location}$$, $$${data.launch}$$, $$${data.time}$$);`;
-        const { rows } = await pool.query(qs);
+        data.title = `$$'${data.title}'$$`;
+        const query = {
+            text: 'INSERT INTO post (title, body, activity, groups, location, start_date, start_time) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+            values: [data.title, data.body, `$$${data.activity}$$`, newGroups, `$$${data.location}$$`, `${data.launch}`, `$$${data.time}$$`] // eslint-disable-line
+        };
+        console.log(query);
+        // const qs = `INSERT INTO post (title, body, activity, groups, location, start_date, start_time) VALUES ($$${data.title}$$, $$${data.body}$$, $$${data.activity}$$, $$${newGroups}$$, $$${data.location}$$, $$${data.launch}$$, $$${data.time}$$);`;
+        const { rows } = await pool.query(query);
         return rows;
     } catch (e) {
         const error = `db error in addPost ${JSON.stringify(e)}`;
