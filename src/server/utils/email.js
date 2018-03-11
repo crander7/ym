@@ -82,6 +82,7 @@ const parentNotification = (user, post, checkin, dayOffset = false) => {
     else if (user.alert_days === 2) text += 'happening in 2 days';
     else if (user.alert_days === 3) text += 'happening in 3 days';
     if (post.activity !== 'Anouncement') text += ` meet  at ${post.start_time}. The activity details are: ${post.body}`;
+    text += `\n\nClick the following link to confirm your childs attendance to this activity. ${checkin}`;
     text += '\n\nPlease visit https://1stwardym.com for more information. This is an automated email.';
     smtpTransport.sendMail({
         from: `${YOUR_NAME} ${EMAIL_ACCOUNT_USER}`,
