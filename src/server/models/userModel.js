@@ -127,7 +127,7 @@ const getEditReqs = async () => {
 const updateEditReq = async (id, approved) => {
     let text = '';
     try {
-        if (approved) text = 'UPDATE users SET edit_req = false, account = "editor" WHERE id = $1 RETURNING alerts, phone, email, display_name';
+        if (approved) text = 'UPDATE users SET edit_req = false, account = \'editor\' WHERE id = $1 RETURNING alerts, phone, email, display_name';
         else text = 'UPDATE users SET edit_req = false WHERE id = $1 RETURNING alerts, phone, email, display_name';
         const query = {
             text,
@@ -159,7 +159,7 @@ const updateUser = async (user) => {
 const getAllUsers4Notifications = async (hour) => {
     try {
         const query = {
-            text: 'SELECT id, alerts, alert_days, alert_hour, class, email, phone, display_name FROM users WHERE account != "parent" AND alerts IN ("email", "text") AND alert_hour = $1',
+            text: 'SELECT id, alerts, alert_days, alert_hour, class, email, phone, display_name FROM users WHERE account != \'parent\' AND alerts IN (\'email\', \'text\') AND alert_hour = $1',
             values: [hour]
         };
         const { rows } = await pool.query(query);
@@ -173,7 +173,7 @@ const getAllUsers4Notifications = async (hour) => {
 const getAllParents4Notification = async (hour) => {
     try {
         const query = {
-            text: 'SELECT u.alerts, u.alert_days, u.alert_hour, c.id, c.class, c.name, u.phone, u.email FROM users AS u JOIN children AS c ON u.id = c.user_id WHERE u.account = "parent" AND c.class IS NOT NULL AND u.alerts IN ("email", "text") AND u.alert_hour = $1',
+            text: 'SELECT u.alerts, u.alert_days, u.alert_hour, c.id, c.class, c.name, u.phone, u.email FROM users AS u JOIN children AS c ON u.id = c.user_id WHERE u.account = \'parent\' AND c.class IS NOT NULL AND u.alerts IN (\'email\', \'text\') AND u.alert_hour = $1',
             values: [hour]
         };
         const { rows } = await pool.query(query);
@@ -186,7 +186,7 @@ const getAllParents4Notification = async (hour) => {
 
 const getAllUsers = async () => {
     try {
-        const qs = 'SELECT * FROM users WHERE class != "Adults" OR class IS NULL';
+        const qs = 'SELECT * FROM users WHERE class != \'Adults\' OR class IS NULL';
         const { rows } = await pool.query(qs);
         return rows;
     } catch (e) {
@@ -208,7 +208,7 @@ const getAllUsers4Message = async () => {
 
 const getAllChildren = async () => {
     try {
-        const qs = 'SELECT * FROM children WHERE class != "Adults" OR class IS NULL';
+        const qs = 'SELECT * FROM children WHERE class != \'Adults\' OR class IS NULL';
         const { rows } = await pool.query(qs);
         return rows;
     } catch (e) {
