@@ -52,15 +52,7 @@ const deletePost = async (id) => {
 const addPost = async (data) => {
     try {
         let newGroups = null;
-        if (data.groups.length > 0) {
-            // newGroups = data.groups.map((group, idx) => {
-            //     if (idx === data.groups.length - 1) return `'${group}'`;
-            //     return `'${group}',`;
-            // });
-            // newGroups.unshift('ARRAY [');
-            // newGroups.push(']');
-            newGroups = `{${data.groups.join(', ')}}`;
-        }
+        if (data.groups.length > 0) newGroups = `{${data.groups.join(', ')}}`;
         const qs = `INSERT INTO post (title, body, activity, groups, location, start_date, start_time) VALUES ($$${data.title}$$, $$${data.body}$$, $$${data.activity}$$, $$${newGroups}$$, $$${data.location}$$, $$${data.launch}$$, $$${data.time}$$);`;
         const { rows } = await pool.query(qs);
         return rows;
@@ -83,16 +75,8 @@ const getPost = async (id) => {
 const updatePost = async (data) => {
     try {
         let newGroups = null;
-        if (data.groups.length > 0) {
-            newGroups = data.groups.map((group, idx) => {
-                if (idx === data.groups.length - 1) return `'${group}'`;
-                return `'${group}',`;
-            });
-            newGroups.unshift('ARRAY [');
-            newGroups.push(']');
-            newGroups = newGroups.join('');
-        }
-        await pool.query(`UPDATE post SET title = $$${data.title}$$, body = $$${data.body}$$, activity = $$${data.activity}$$, groups = ${newGroups}, start_date = '${data.launch}', start_time = $$${data.time}$$, location = $$${data.location}$$ WHERE id = ${data.postId}`);
+        if (data.groups.length > 0) newGroups = `{${data.groups.join(', ')}}`;
+        await pool.query(`UPDATE post SET title = $$${data.title}$$, body = $$${data.body}$$, activity = $$${data.activity}$$, groups = $$${newGroups}$$, start_date = $$${data.launch}$$, start_time = $$${data.time}$$, location = $$${data.location}$$ WHERE id = ${data.postId}`);
         return true;
     } catch (e) {
         const error = `db error in updatePost ${JSON.stringify(e)}`;
@@ -124,13 +108,9 @@ const addTag = async (body) => {
                 if (idx === row.tags.length - 1) return `'${tag}','${body.tag}'`;
                 return `'${tag}',`;
             });
-            tags.unshift('ARRAY [');
-            tags.push(']');
-            tags = tags.join('');
-        } else {
-            tags = `ARRAY ['${body.tag}']`;
-        }
-        const q = `UPDATE post SET tags = ${tags} WHERE id = ${body.postId}`;
+            tags = `{${tags.join(', ')}}`;
+        } else tags = `{${body.tag}}`;
+        const q = `UPDATE post SET tags = $$${tags}$$ WHERE id = ${body.postId}`;
         await pool.query(q);
         return true;
     } catch (e) {
