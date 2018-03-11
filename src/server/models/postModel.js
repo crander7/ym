@@ -68,8 +68,8 @@ const addPost = async (data) => {
         }
         console.log(newGroups);
         const query = {
-            text: 'INSERT INTO post (title, body, activity, groups, location, start_date, start_time) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-            values: [`$$${data.title}$$`, `$$${data.body}$$`, `$$${data.activity}$$`, newGroups, `$$${data.location}$$`, `${data.launch}`, `$$${data.time}$$`]
+            text: 'INSERT INTO post (title, body, activity, groups, location, start_date, start_time) VALUES ($$$1$$, $2, $3, $4, $5, $6, $7)',
+            values: [data.title, data.body, `$$${data.activity}$$`, newGroups, `$$${data.location}$$`, `${data.launch}`, `$$${data.time}$$`]
         };
         console.log(query);
         const { rows } = await pool.query(query);
