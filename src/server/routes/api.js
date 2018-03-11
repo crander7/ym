@@ -18,6 +18,8 @@ router.post('/handleEditReq', authCheckMiddleware, apiCtrl.handleEditReq);
 router.post('/tags/add', authCheckMiddleware, apiCtrl.addTag);
 router.post('/addKid', authCheckMiddleware, apiCtrl.addKid);
 router.post('/sendGroupMessage', authCheckMiddleware, apiCtrl.sendGroupMessage);
+router.post('/userCheckin', apiCtrl.userCheckin);
+router.post('/childCheckin', apiCtrl.childCheckin);
 
 /* PUT Endpoints */
 router.put('/updatePost', authCheckMiddleware, apiCtrl.updatePost);

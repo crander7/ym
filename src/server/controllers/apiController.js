@@ -185,6 +185,27 @@ const getAllUsers = async (req, res) => {
     }
 };
 
+const userCheckin = async (req, res) => {
+    try {
+        const resp = await postModel.userCheckin(req.body.query);
+        console.log(resp, typeof resp);
+        res.json({ success: true, first: resp });
+    } catch (e) {
+        res.json({ error: e });
+        email.sendErrorReport(e, 'userCheckin');
+    }
+};
+
+const childCheckin = async (req, res) => {
+    try {
+        const resp = await postModel.childCheckin(req.body.query);
+        res.json({ success: true, first: resp });
+    } catch (e) {
+        res.json({ error: e });
+        email.sendErrorReport(e, 'childCheckin');
+    }
+};
+
 module.exports = {
     addPost,
     getUpcomingPosts,
@@ -201,5 +222,7 @@ module.exports = {
     setParent,
     addKid,
     sendGroupMessage,
-    getAllUsers
+    getAllUsers,
+    userCheckin,
+    childCheckin
 };

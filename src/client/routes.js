@@ -17,6 +17,7 @@ import Spam from './components/Spam/Spam';
 import Denied from './components/Denied/Denied';
 import LoginFail from './components/LoginFail/LoginFail';
 import NotFound from './components/NotFound/NotFound';
+import CheckinRes from './components/CheckinRes/CheckinRes';
 
 export default (props) => {
     const checkAuth = async (nextState, replace, callback) => {
@@ -120,6 +121,10 @@ export default (props) => {
                             replace({ pathname: '/loginFail', state: query.message });
                         }
                     }}
+                />
+                <Route
+                    path="/checkin"
+                    component={CheckinRes}
                 />
                 <Route
                     path="/account"

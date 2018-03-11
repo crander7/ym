@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS checkins CASCADE;
 DROP TABLE IF EXISTS post CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS children CASCADE;
@@ -49,4 +50,12 @@ CREATE TABLE IF NOT EXISTS children (
     dob TIMESTAMPTZ NULL DEFAULT NULL,
     class VARCHAR(40) NULL DEFAULT NULL,
     user_id INT REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS checkins (
+  user_id INTEGER REFERENCES users (id),
+  post_id INTEGER REFERENCES post (id),
+  child_id INTEGER REFERENCES children (id),
+  CONSTRAINT onecheckinperuser UNIQUE (user_id, post_id),
+  CONSTRAINT onecheckinperkid UNIQUE (post_id, child_id)
 );

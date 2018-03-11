@@ -1,9 +1,10 @@
 const Redis = require('ioredis');
 
 const redis = new Redis();
+const SEVEN_DAYS = 604800;
 
 const setToken = (id, token) => new Promise((resolve, reject) => {
-    redis.setex(id, 86400, token, (err, result) => {
+    redis.setex(id, SEVEN_DAYS, token, (err, result) => {
         if (err) reject(err);
         else resolve(result);
     });

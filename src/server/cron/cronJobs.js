@@ -1,24 +1,33 @@
+/* eslint no-await-in-loop: 0 */
 const CronJob = require('cron').CronJob;
+const googl = require('goo.gl');
 const postModel = require('./../models/postModel');
 const userModel = require('./../models/userModel');
 const email = require('./../utils/email');
 const text = require('./../utils/text');
+const konphyg = require('konphyg')(`${__dirname}/../../config`);
 
+const config = konphyg('index');
+googl.setKey(config.shortCode);
 
 const reminders = new CronJob({
     cronTime: '00 00 * * * *',
     onTick: async () => {
-        // console.log('Notificatin cron started');
         let hour;
         let today;
         const day = new Date();
-        if (day.getHours() <= 1) {
+        if (day.getHours() <= 6) {
             today = day.getDate() - 1;
-            if (day.getHours() === 1) hour = 23;
-            if (day.getHours() === 0) hour = 22;
+            if (day.getHours() === 6) hour = 23;
+            if (day.getHours() === 5) hour = 22;
+            if (day.getHours() === 4) hour = 21;
+            if (day.getHours() === 3) hour = 20;
+            if (day.getHours() === 2) hour = 19;
+            if (day.getHours() === 1) hour = 18;
+            if (day.getHours() === 0) hour = 17;
         } else {
             today = day.getDate();
-            hour = day.getHours() - 2;
+            hour = day.getHours() - 7;
         }
         day.setDate(day.getDate() - 1);
         day.setHours(0, 0, 0);
@@ -52,30 +61,55 @@ const reminders = new CronJob({
         }
         for (let i = 0; i < sameDay.length; i += 1) {
             for (let j = 0; j < todayPosts.length; j += 1) {
-                if (sameDay[i].alerts === 'email' && sameDay[i].alert_hour && (sameDay[i].alert_days.toString()) && (todayPosts[j].groups.indexOf(sameDay[i].class) !== -1 || sameDay[i].class === 'Adults' || todayPosts[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(todayPosts[j].start_time, sameDay[i].alert_hour)) email.notification(sameDay[i], todayPosts[j]);
-                else if (sameDay[i].alerts === 'text' && sameDay[i].alert_hour && (sameDay[i].alert_days.toString()) && (todayPosts[j].groups.indexOf(sameDay[i].class) !== -1 || sameDay[i].class === 'Adults' || todayPosts[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(todayPosts[j].start_time, sameDay[i].alert_hour)) text.notification(sameDay[i], todayPosts[j]);
+                if (sameDay[i].alerts === 'email' && sameDay[i].alert_hour && (sameDay[i].alert_days.toString()) && (todayPosts[j].groups.indexOf(sameDay[i].class) !== -1 || sameDay[i].class === 'Adults' || todayPosts[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(todayPosts[j].start_time, sameDay[i].alert_hour)) {
+                    const shortCode = await generateShortCode(sameDay[i].id, todayPosts[j].id);
+                    email.notification(sameDay[i], todayPosts[j], shortCode);
+                } else if (sameDay[i].alerts === 'text' && sameDay[i].alert_hour && (sameDay[i].alert_days.toString()) && (todayPosts[j].groups.indexOf(sameDay[i].class) !== -1 || sameDay[i].class === 'Adults' || todayPosts[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(todayPosts[j].start_time, sameDay[i].alert_hour)) {
+                    const shortCode = await generateShortCode(sameDay[i].id, todayPosts[j].id);
+                    text.notification(sameDay[i], todayPosts[j], shortCode);
+                }
             }
             for (let j = 0; j < tomorrow.length; j += 1) {
-                if (sameDay[i].alerts === 'email' && sameDay[i].alert_hour && (sameDay[i].alert_days.toString()) && (tomorrow[j].groups.indexOf(sameDay[i].class) !== -1 || sameDay[i].class === 'Adults' || tomorrow[j].groups[0] === 'All Young Men') && activityNotificationThreshold(tomorrow[j].start_time, sameDay[i].alert_hour)) email.notification(sameDay[i], tomorrow[j], true);
-                else if (sameDay[i].alerts === 'text' && sameDay[i].alert_hour && (sameDay[i].alert_days.toString()) && (tomorrow[j].groups.indexOf(sameDay[i].class) !== -1 || sameDay[i].class === 'Adults' || tomorrow[j].groups[0] === 'All Young Men') && activityNotificationThreshold(tomorrow[j].start_time, sameDay[i].alert_hour)) text.notification(sameDay[i], tomorrow[j], true);
+                if (sameDay[i].alerts === 'email' && sameDay[i].alert_hour && (sameDay[i].alert_days.toString()) && (tomorrow[j].groups.indexOf(sameDay[i].class) !== -1 || sameDay[i].class === 'Adults' || tomorrow[j].groups[0] === 'All Young Men') && activityNotificationThreshold(tomorrow[j].start_time, sameDay[i].alert_hour)) {
+                    const shortCode = await generateShortCode(sameDay[i].id, tomorrow[j].id);
+                    email.notification(sameDay[i], tomorrow[j], shortCode, true);
+                } else if (sameDay[i].alerts === 'text' && sameDay[i].alert_hour && (sameDay[i].alert_days.toString()) && (tomorrow[j].groups.indexOf(sameDay[i].class) !== -1 || sameDay[i].class === 'Adults' || tomorrow[j].groups[0] === 'All Young Men') && activityNotificationThreshold(tomorrow[j].start_time, sameDay[i].alert_hour)) {
+                    const shortCode = await generateShortCode(sameDay[i].id, tomorrow[j].id);
+                    text.notification(sameDay[i], tomorrow[j], shortCode, true);
+                }
             }
         }
         for (let i = 0; i < dayBefore.length; i += 1) {
             for (let j = 0; j < tomorrow.length; j += 1) {
-                if (dayBefore[i].alerts === 'email' && dayBefore[i].alert_hour && dayBefore[i].alert_days && (tomorrow[j].groups.indexOf(dayBefore[i].class) !== -1 || dayBefore[i].class === 'Adults' || tomorrow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(tomorrow[j].start_time, dayBefore[i].alert_hour)) email.notification(dayBefore[i], tomorrow[j]);
-                else if (dayBefore[i].alerts === 'text' && dayBefore[i].alert_hour && dayBefore[i].alert_days && (tomorrow[j].groups.indexOf(dayBefore[i].class) !== -1 || dayBefore[i].class === 'Adults' || tomorrow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(tomorrow[j].start_time, dayBefore[i].alert_hour)) text.notification(dayBefore[i], tomorrow[j]);
+                if (dayBefore[i].alerts === 'email' && dayBefore[i].alert_hour && dayBefore[i].alert_days && (tomorrow[j].groups.indexOf(dayBefore[i].class) !== -1 || dayBefore[i].class === 'Adults' || tomorrow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(tomorrow[j].start_time, dayBefore[i].alert_hour)) {
+                    const shortCode = await generateShortCode(dayBefore[i].id, tomorrow[j].id);
+                    email.notification(dayBefore[i], tomorrow[j], shortCode);
+                } else if (dayBefore[i].alerts === 'text' && dayBefore[i].alert_hour && dayBefore[i].alert_days && (tomorrow[j].groups.indexOf(dayBefore[i].class) !== -1 || dayBefore[i].class === 'Adults' || tomorrow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(tomorrow[j].start_time, dayBefore[i].alert_hour)) {
+                    const shortCode = await generateShortCode(dayBefore[i].id, tomorrow[j].id);
+                    text.notification(dayBefore[i], tomorrow[j], shortCode);
+                }
             }
         }
         for (let i = 0; i < twoDaysBefore.length; i += 1) {
             for (let j = 0; j < twoDaysFromNow.length; j += 1) {
-                if (twoDaysBefore[i].alerts === 'email' && twoDaysBefore[i].alert_hour && twoDaysBefore[i].alert_days && (twoDaysFromNow[j].groups.indexOf(twoDaysBefore[i].class) !== -1 || twoDaysBefore[i].class === 'Adults' || twoDaysFromNow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(twoDaysFromNow[j].start_time, twoDaysBefore[i].alert_hour)) email.notification(twoDaysBefore[i], twoDaysFromNow[j]);
-                else if (twoDaysBefore[i].alerts === 'text' && twoDaysBefore[i].alert_hour && twoDaysBefore[i].alert_days && (twoDaysFromNow[j].groups.indexOf(twoDaysBefore[i].class) !== -1 || twoDaysBefore[i].class === 'Adults' || twoDaysFromNow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(twoDaysFromNow[j].start_time, twoDaysBefore[i].alert_hour)) text.notification(twoDaysBefore[i], twoDaysFromNow[j]);
+                if (twoDaysBefore[i].alerts === 'email' && twoDaysBefore[i].alert_hour && twoDaysBefore[i].alert_days && (twoDaysFromNow[j].groups.indexOf(twoDaysBefore[i].class) !== -1 || twoDaysBefore[i].class === 'Adults' || twoDaysFromNow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(twoDaysFromNow[j].start_time, twoDaysBefore[i].alert_hour)) {
+                    const shortCode = await generateShortCode(twoDaysBefore[i].id, twoDaysFromNow[j].id);
+                    email.notification(twoDaysBefore[i], twoDaysFromNow[j], shortCode);
+                } else if (twoDaysBefore[i].alerts === 'text' && twoDaysBefore[i].alert_hour && twoDaysBefore[i].alert_days && (twoDaysFromNow[j].groups.indexOf(twoDaysBefore[i].class) !== -1 || twoDaysBefore[i].class === 'Adults' || twoDaysFromNow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(twoDaysFromNow[j].start_time, twoDaysBefore[i].alert_hour)) {
+                    const shortCode = await generateShortCode(twoDaysBefore[i].id, twoDaysFromNow[j].id);
+                    text.notification(twoDaysBefore[i], twoDaysFromNow[j], shortCode);
+                }
             }
         }
         for (let i = 0; i < threeDaysBefore.length; i += 1) {
             for (let j = 0; j < threeDaysFromNow.length; j += 1) {
-                if (threeDaysBefore[i].alerts === 'email' && threeDaysBefore[i].alert_hour && threeDaysBefore[i].alert_days && (threeDaysFromNow[j].groups.indexOf(threeDaysBefore[i].class) !== -1 || threeDaysBefore[i].class === 'Adults' || threeDaysFromNow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(threeDaysFromNow[j].start_time, threeDaysBefore[i].alert_hour)) email.notification(threeDaysBefore[i], threeDaysFromNow[j]);
-                else if (threeDaysBefore[i].alerts === 'text' && threeDaysBefore[i].alert_hour && threeDaysBefore[i].alert_days && (threeDaysFromNow[j].groups.indexOf(threeDaysBefore[i].class) !== -1 || threeDaysBefore[i].class === 'Adults' || threeDaysFromNow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(threeDaysFromNow[j].start_time, threeDaysBefore[i].alert_hour)) text.notification(threeDaysBefore[i], threeDaysFromNow[j]);
+                if (threeDaysBefore[i].alerts === 'email' && threeDaysBefore[i].alert_hour && threeDaysBefore[i].alert_days && (threeDaysFromNow[j].groups.indexOf(threeDaysBefore[i].class) !== -1 || threeDaysBefore[i].class === 'Adults' || threeDaysFromNow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(threeDaysFromNow[j].start_time, threeDaysBefore[i].alert_hour)) {
+                    const shortCode = await generateShortCode(threeDaysBefore[i].id, threeDaysFromNow[j].id);
+                    email.notification(threeDaysBefore[i], threeDaysFromNow[j], shortCode);
+                } else if (threeDaysBefore[i].alerts === 'text' && threeDaysBefore[i].alert_hour && threeDaysBefore[i].alert_days && (threeDaysFromNow[j].groups.indexOf(threeDaysBefore[i].class) !== -1 || threeDaysBefore[i].class === 'Adults' || threeDaysFromNow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(threeDaysFromNow[j].start_time, threeDaysBefore[i].alert_hour)) {
+                    const shortCode = await generateShortCode(threeDaysBefore[i].id, threeDaysFromNow[j].id);
+                    text.notification(threeDaysBefore[i], threeDaysFromNow[j], shortCode);
+                }
             }
         }
 
@@ -99,30 +133,55 @@ const reminders = new CronJob({
         }
         for (let i = 0; i < sameDay.length; i += 1) {
             for (let j = 0; j < todayPosts.length; j += 1) {
-                if (sameDay[i].alerts === 'email' && sameDay[i].alert_hour.toString() && (sameDay[i].alert_days.toString()) && ((todayPosts[j].groups.indexOf(sameDay[i].class) !== -1) || sameDay[i].class === 'Adults' || todayPosts[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(todayPosts[j].start_time, sameDay[i].alert_hour)) email.parentNotification(sameDay[i], todayPosts[j]);
-                else if (sameDay[i].alerts === 'text' && sameDay[i].alert_hour.toString() && (sameDay[i].alert_days.toString()) && (todayPosts[j].groups.indexOf(sameDay[i].class) !== -1 || sameDay[i].class === 'Adults' || todayPosts[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(todayPosts[j].start_time, sameDay[i].alert_hour)) text.parentNotification(sameDay[i], todayPosts[j]);
+                if (sameDay[i].alerts === 'email' && sameDay[i].alert_hour.toString() && (sameDay[i].alert_days.toString()) && ((todayPosts[j].groups.indexOf(sameDay[i].class) !== -1) || sameDay[i].class === 'Adults' || todayPosts[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(todayPosts[j].start_time, sameDay[i].alert_hour)) {
+                    const shortCode = await generateShortCode(sameDay[i].id, todayPosts[j].id, true);
+                    email.parentNotification(sameDay[i], todayPosts[j], shortCode);
+                } else if (sameDay[i].alerts === 'text' && sameDay[i].alert_hour.toString() && (sameDay[i].alert_days.toString()) && (todayPosts[j].groups.indexOf(sameDay[i].class) !== -1 || sameDay[i].class === 'Adults' || todayPosts[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(todayPosts[j].start_time, sameDay[i].alert_hour)) {
+                    const shortCode = await generateShortCode(sameDay[i].id, todayPosts[j].id, true);
+                    text.parentNotification(sameDay[i], todayPosts[j], shortCode);
+                }
             }
             for (let j = 0; j < tomorrow.length; j += 1) {
-                if (sameDay[i].alerts === 'email' && sameDay[i].alert_hour.toString() && (sameDay[i].alert_days.toString()) && (tomorrow[j].groups.indexOf(sameDay[i].class) !== -1 || sameDay[i].class === 'Adults' || tomorrow[j].groups[0] === 'All Young Men') && activityNotificationThreshold(tomorrow[j].start_time, sameDay[i].alert_hour)) email.parentNotification(sameDay[i], tomorrow[j], true);
-                else if (sameDay[i].alerts === 'text' && sameDay[i].alert_hour.toString() && (sameDay[i].alert_days.toString()) && (tomorrow[j].groups.indexOf(sameDay[i].class) !== -1 || sameDay[i].class === 'Adults' || tomorrow[j].groups[0] === 'All Young Men') && activityNotificationThreshold(tomorrow[j].start_time, sameDay[i].alert_hour)) text.parentNotification(sameDay[i], tomorrow[j], true);
+                if (sameDay[i].alerts === 'email' && sameDay[i].alert_hour.toString() && (sameDay[i].alert_days.toString()) && (tomorrow[j].groups.indexOf(sameDay[i].class) !== -1 || sameDay[i].class === 'Adults' || tomorrow[j].groups[0] === 'All Young Men') && activityNotificationThreshold(tomorrow[j].start_time, sameDay[i].alert_hour)) {
+                    const shortCode = await generateShortCode(sameDay[i].id, tomorrow[j].id, true);
+                    email.parentNotification(sameDay[i], tomorrow[j], shortCode, true);
+                } else if (sameDay[i].alerts === 'text' && sameDay[i].alert_hour.toString() && (sameDay[i].alert_days.toString()) && (tomorrow[j].groups.indexOf(sameDay[i].class) !== -1 || sameDay[i].class === 'Adults' || tomorrow[j].groups[0] === 'All Young Men') && activityNotificationThreshold(tomorrow[j].start_time, sameDay[i].alert_hour)) {
+                    const shortCode = await generateShortCode(sameDay[i].id, tomorrow[j].id, true);
+                    text.parentNotification(sameDay[i], tomorrow[j], shortCode, true);
+                }
             }
         }
         for (let i = 0; i < dayBefore.length; i += 1) {
             for (let j = 0; j < tomorrow.length; j += 1) {
-                if (dayBefore[i].alerts === 'email' && dayBefore[i].alert_hour.toString() && dayBefore[i].alert_days && (tomorrow[j].groups.indexOf(dayBefore[i].class) !== -1 || dayBefore[i].class === 'Adults' || tomorrow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(tomorrow[j].start_time, dayBefore[i].alert_hour)) email.parentNotification(dayBefore[i], tomorrow[j]);
-                else if (dayBefore[i].alerts === 'text' && dayBefore[i].alert_hour.toString() && dayBefore[i].alert_days && (tomorrow[j].groups.indexOf(dayBefore[i].class) !== -1 || dayBefore[i].class === 'Adults' || tomorrow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(tomorrow[j].start_time, dayBefore[i].alert_hour)) text.parentNotification(dayBefore[i], tomorrow[j]);
+                if (dayBefore[i].alerts === 'email' && dayBefore[i].alert_hour.toString() && dayBefore[i].alert_days && (tomorrow[j].groups.indexOf(dayBefore[i].class) !== -1 || dayBefore[i].class === 'Adults' || tomorrow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(tomorrow[j].start_time, dayBefore[i].alert_hour)) {
+                    const shortCode = await generateShortCode(dayBefore[i].id, tomorrow[j].id, true);
+                    email.parentNotification(dayBefore[i], tomorrow[j], shortCode);
+                } else if (dayBefore[i].alerts === 'text' && dayBefore[i].alert_hour.toString() && dayBefore[i].alert_days && (tomorrow[j].groups.indexOf(dayBefore[i].class) !== -1 || dayBefore[i].class === 'Adults' || tomorrow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(tomorrow[j].start_time, dayBefore[i].alert_hour)) {
+                    const shortCode = await generateShortCode(dayBefore[i].id, tomorrow[j].id, true);
+                    text.parentNotification(dayBefore[i], tomorrow[j], shortCode);
+                }
             }
         }
         for (let i = 0; i < twoDaysBefore.length; i += 1) {
             for (let j = 0; j < twoDaysFromNow.length; j += 1) {
-                if (twoDaysBefore[i].alerts === 'email' && twoDaysBefore[i].alert_hour.toString() && twoDaysBefore[i].alert_days && (twoDaysFromNow[j].groups.indexOf(twoDaysBefore[i].class) !== -1 || twoDaysBefore[i].class === 'Adults' || twoDaysFromNow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(twoDaysFromNow[j].start_time, twoDaysBefore[i].alert_hour)) email.parentNotification(twoDaysBefore[i], twoDaysFromNow[j]);
-                else if (twoDaysBefore[i].alerts === 'text' && twoDaysBefore[i].alert_hour.toString() && twoDaysBefore[i].alert_days && (twoDaysFromNow[j].groups.indexOf(twoDaysBefore[i].class) !== -1 || twoDaysBefore[i].class === 'Adults' || twoDaysFromNow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(twoDaysFromNow[j].start_time, twoDaysBefore[i].alert_hour)) text.parentNotification(twoDaysBefore[i], twoDaysFromNow[j]);
+                if (twoDaysBefore[i].alerts === 'email' && twoDaysBefore[i].alert_hour.toString() && twoDaysBefore[i].alert_days && (twoDaysFromNow[j].groups.indexOf(twoDaysBefore[i].class) !== -1 || twoDaysBefore[i].class === 'Adults' || twoDaysFromNow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(twoDaysFromNow[j].start_time, twoDaysBefore[i].alert_hour)) {
+                    const shortCode = await generateShortCode(twoDaysBefore[i].id, twoDaysFromNow[j].id, true);
+                    email.parentNotification(twoDaysBefore[i], twoDaysFromNow[j], shortCode);
+                } else if (twoDaysBefore[i].alerts === 'text' && twoDaysBefore[i].alert_hour.toString() && twoDaysBefore[i].alert_days && (twoDaysFromNow[j].groups.indexOf(twoDaysBefore[i].class) !== -1 || twoDaysBefore[i].class === 'Adults' || twoDaysFromNow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(twoDaysFromNow[j].start_time, twoDaysBefore[i].alert_hour)) {
+                    const shortCode = await generateShortCode(twoDaysBefore[i].id, twoDaysFromNow[j].id, true);
+                    text.parentNotification(twoDaysBefore[i], twoDaysFromNow[j], shortCode);
+                }
             }
         }
         for (let i = 0; i < threeDaysBefore.length; i += 1) {
             for (let j = 0; j < threeDaysFromNow.length; j += 1) {
-                if (threeDaysBefore[i].alerts === 'email' && threeDaysBefore[i].alert_hour.toString() && threeDaysBefore[i].alert_days && (threeDaysFromNow[j].groups.indexOf(threeDaysBefore[i].class) !== -1 || threeDaysBefore[i].class === 'Adults' || threeDaysFromNow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(threeDaysFromNow[j].start_time, threeDaysBefore[i].alert_hour)) email.parentNotification(threeDaysBefore[i], threeDaysFromNow[j]);
-                else if (threeDaysBefore[i].alerts === 'text' && threeDaysBefore[i].alert_hour.toString() && threeDaysBefore[i].alert_days && (threeDaysFromNow[j].groups.indexOf(threeDaysBefore[i].class) !== -1 || threeDaysBefore[i].class === 'Adults' || threeDaysFromNow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(threeDaysFromNow[j].start_time, threeDaysBefore[i].alert_hour)) text.parentNotification(threeDaysBefore[i], threeDaysFromNow[j]);
+                if (threeDaysBefore[i].alerts === 'email' && threeDaysBefore[i].alert_hour.toString() && threeDaysBefore[i].alert_days && (threeDaysFromNow[j].groups.indexOf(threeDaysBefore[i].class) !== -1 || threeDaysBefore[i].class === 'Adults' || threeDaysFromNow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(threeDaysFromNow[j].start_time, threeDaysBefore[i].alert_hour)) {
+                    const shortCode = await generateShortCode(threeDaysBefore[i].id, threeDaysFromNow[j].id, true);
+                    email.parentNotification(threeDaysBefore[i], threeDaysFromNow[j], shortCode);
+                } else if (threeDaysBefore[i].alerts === 'text' && threeDaysBefore[i].alert_hour.toString() && threeDaysBefore[i].alert_days && (threeDaysFromNow[j].groups.indexOf(threeDaysBefore[i].class) !== -1 || threeDaysBefore[i].class === 'Adults' || threeDaysFromNow[j].groups[0] === 'All Young Men') && !activityNotificationThreshold(threeDaysFromNow[j].start_time, threeDaysBefore[i].alert_hour)) {
+                    const shortCode = await generateShortCode(threeDaysBefore[i].id, threeDaysFromNow[j].id, true);
+                    text.parentNotification(threeDaysBefore[i], threeDaysFromNow[j], shortCode);
+                }
             }
         }
         // console.log('Notification cron done!');
@@ -255,4 +314,13 @@ const activityNotificationThreshold = (actString, userPref) => {
         return test;
     }
     return false;
+};
+
+const generateShortCode = async (userId, activityId, child = false) => {
+    try {
+        const shortCode = await googl.shorten(`https://1stwardym.com/checkin?act=${activityId}&user=${userId}&child=${child}`);
+        return shortCode;
+    } catch (e) {
+        throw e;
+    }
 };

@@ -15,7 +15,7 @@ const sendDecision = (user, approved) => {
     });
 };
 
-const notification = (user, post, dayOffset = false) => {
+const notification = (user, post, checkin, dayOffset = false) => {
     let body = `Mutual notification: ${post.body} `;
     if (post.activity !== 'Anouncement') body += `at ${post.start_time} at ${post.location} `;
     if (dayOffset) user.alert_days += 1;
@@ -33,7 +33,7 @@ const notification = (user, post, dayOffset = false) => {
     });
 };
 
-const parentNotification = (user, post, dayOffset = false) => {
+const parentNotification = (user, post, checkin, dayOffset = false) => {
     let body = `Mutual notification: ${post.body} `;
     if (post.activity !== 'Anouncement') body += `at ${post.start_time} at ${post.location} `;
     if (dayOffset) user.alert_days += 1;

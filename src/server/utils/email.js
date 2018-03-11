@@ -54,7 +54,7 @@ const editReq = (user) => {
     });
 };
 
-const notification = (user, post, dayOffset = false) => {
+const notification = (user, post, checkin, dayOffset = false) => {
     let text = `Hey ${user.display_name.split(' ')[0]},\n\n\tThere's ${post.title} `;
     if (dayOffset) user.alert_days += 1;
     if (user.alert_days === 0) text += 'happening today';
@@ -63,6 +63,7 @@ const notification = (user, post, dayOffset = false) => {
     else if (user.alert_days === 3) text += 'happening in 3 days';
     if (post.activity !== 'Anouncement') text += ` meet  at ${post.start_time}. The activity details are: ${post.body}`;
     text += '\n\nPlease visit https://1stwardym.com for more information. This is an automated email.';
+    text += `\n\nClick the following link to check-in to this activity. ${checkin}`;
     smtpTransport.sendMail({
         from: `${YOUR_NAME} ${EMAIL_ACCOUNT_USER}`,
         to: user.email,
@@ -73,7 +74,7 @@ const notification = (user, post, dayOffset = false) => {
     });
 };
 
-const parentNotification = (user, post, dayOffset = false) => {
+const parentNotification = (user, post, checkin, dayOffset = false) => {
     let text = `Regarding: ${user.name}\n\n\tThere's ${post.title} `;
     if (dayOffset) user.alert_days += 1;
     if (user.alert_days === 0) text += 'happening today';

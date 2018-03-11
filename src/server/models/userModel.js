@@ -157,7 +157,7 @@ const getAllUsers4Notifications = hour => new Promise(async (resolve, reject) =>
     let client = null;
     try {
         client = await pool.connect();
-        const qs = `SELECT alerts, alert_days, alert_hour, class, email, phone, display_name FROM users WHERE account != 'parent' AND alerts IN ('email', 'text') AND alert_hour = ${hour}`;
+        const qs = `SELECT id, alerts, alert_days, alert_hour, class, email, phone, display_name FROM users WHERE account != 'parent' AND alerts IN ('email', 'text') AND alert_hour = ${hour}`;
         const res = await client.query(qs);
         client.release();
         resolve(res.rows);
@@ -172,7 +172,7 @@ const getAllParents4Notification = hour => new Promise(async (resolve, reject) =
     let client = null;
     try {
         client = await pool.connect();
-        const qs = `SELECT u.alerts, u.alert_days, u.alert_hour, c.class, c.name, u.phone, u.email FROM users AS u JOIN children AS c ON u.id = c.user_id WHERE u.account = 'parent' AND c.class IS NOT NULL AND u.alerts IN ('email', 'text') AND u.alert_hour = ${hour};`;
+        const qs = `SELECT u.alerts, u.alert_days, u.alert_hour, c.id, c.class, c.name, u.phone, u.email FROM users AS u JOIN children AS c ON u.id = c.user_id WHERE u.account = 'parent' AND c.class IS NOT NULL AND u.alerts IN ('email', 'text') AND u.alert_hour = ${hour};`;
         const res = await client.query(qs);
         client.release();
         resolve(res.rows);

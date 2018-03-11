@@ -171,6 +171,37 @@ const addTag = body => new Promise(async (resolve, reject) => {
     }
 });
 
+const userCheckin = async (data) => {
+    console.log(data);
+    let client = null;
+    try {
+        client = await pool.connect();
+        await client.query(`INSERT INTO checkins (post_id, user_id) VALUES (${data.act}, ${data.user});`);
+        client.release();
+        return true;
+    } catch (e) {
+        if (client) client.release();
+        if (JSON.stringify(e).indexOf('onecheckinperuser') !== -1) return false;
+        const error = `db error in userCheckin ${JSON.stringify(e)}`;
+        throw error;
+    }
+};
+
+const childCheckin = async (data) => {
+    let client = null;
+    try {
+        client = await pool.connect();
+        await client.query(`INSERT INTO checkins (post_id, child_id) VALUES (${data.act}, ${data.user});`);
+        client.release();
+        return true;
+    } catch (e) {
+        if (client) client.release();
+        if (JSON.stringify(e).indexOf('onecheckinperkid') !== -1) return false;
+        const error = `db error in childCheckin ${JSON.stringify(e)}`;
+        throw error;
+    }
+};
+
 module.exports = {
     getUpcomingPosts,
     getArchivePosts,
@@ -179,5 +210,7 @@ module.exports = {
     getPost,
     updatePost,
     getNext3DaysPosts,
-    addTag
+    addTag,
+    userCheckin,
+    childCheckin
 };
