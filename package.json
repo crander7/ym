@@ -88,7 +88,6 @@
     "logs": "pm2 logs ym --lines 100",
     "test": "node scripts/test.js --env=jsdom"
   },
-  "proxy": "http://localhost:8086",
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{js,jsx}"
