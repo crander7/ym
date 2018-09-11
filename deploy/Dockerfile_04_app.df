@@ -1,0 +1,16 @@
+FROM ym.app_npm
+
+WORKDIR /app
+
+COPY ["*.js", "*.json", "*.lock", "/app/"]
+COPY ["src/", "/app/src/"]
+COPY ["build", "/app/build"]
+
+ADD static_dist.tar /app/
+
+EXPOSE 8086
+
+ENV NODE_ENV=production \
+  APP_ENV=prod
+
+CMD ["node", "./src/server/server.js"]

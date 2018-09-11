@@ -1,0 +1,21 @@
+FROM node:9-alpine
+
+# Use this instance as a snapshot of your npm development modules,
+# and only re-build when those modules need to be changed.
+
+RUN apk add --no-cache ca-certificates git python make g++ && \
+  apk update && \
+  update-ca-certificates && \
+  rm -rf /var/cache/apk/* && \
+  mkdir -p /npm_build/deps
+
+WORKDIR /npm_build
+
+COPY ["*.js", "*.json", "*.lock", "/npm_build/"]
+
+RUN npm i -g node-gyp
+
+# the below line is required if node-gyp fails with ECONNRESET in TLS errors
+# RUN npm config set strict-ssl false
+
+RUN yarn install

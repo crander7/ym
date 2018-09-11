@@ -1,0 +1,17 @@
+FROM node:9-alpine
+
+RUN apk — update upgrade \
+  && apk add --update \
+              ca-certificates git python make g++ \
+  && update-ca-certificates \
+  && rm /var/cache/apk/*
+
+WORKDIR /app
+
+COPY ["*.js", "*.json", "*.lock", "/app/"]
+
+ENV NODE_ENV=production
+
+# Install production only dependencies
+RUN yarn install --prod && \
+    apk del --purge git python make g++

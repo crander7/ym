@@ -1,0 +1,13 @@
+FROM ym.npm
+
+COPY ["src/", "/npm_build/src/"]
+COPY ["config/", "/npm_build/config/"]
+
+COPY ["*.js", "*.json", "*.lock", "/npm_build/"]
+
+ENV NODE_ENV=production
+
+CMD ["/bin/sh", "-c", "node ./config/scripts/build"]
+
+# to re-run:.
+# docker run --name ym_grunt -e NODE_ENV=development ym.grunt node /config/scripts/build
