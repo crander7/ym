@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { Card, CardText } from 'material-ui/Card';
-import Icon from 'material-ui/svg-icons/navigation/close';
+import Close from 'material-ui/svg-icons/navigation/close';
+
+const authBaseUrl = window.location.host.indexOf('localhost') === -1 ? 'https://1stwardym.com' : 'http://localhost:3000';
 
 export default class SignUpLanding extends Component {
     render() {
@@ -10,22 +12,25 @@ export default class SignUpLanding extends Component {
             <div>
                 <div className="outer-form" />
                 <Card className="container inner-form">
-                    {this.props.closeLogin ? <div
-                        tabIndex={0}
-                        aria-label="Close"
-                        focusable="true"
-                        className="upper-x"
-                        onClick={e => this.props.closeLogin(e, true, 'signup')}
-                        role="button"
-                    >
-                        <Icon />
-                    </div> : <Link
-                        to="/"
-                        className="upper-x normalize-link"
-                    >
-                        <Icon />
-                    </Link>}
-                    <a href="https://1stwardym.com/auth/facebook" className="fb-button">
+                    {this.props.closeLogin ?
+                        <div
+                            tabIndex={0}
+                            aria-label="Close"
+                            focusable="true"
+                            className="upper-x"
+                            onClick={e => this.props.closeLogin(e, true, 'signup')}
+                            role="button"
+                        >
+                            <Close />
+                        </div> :
+                        <Link
+                            to="/"
+                            className="upper-x normalize-link"
+                        >
+                            <Close />
+                        </Link>
+                    }
+                    <a href={`${authBaseUrl}/auth/facebook`} className="fb-button">
                         <div className="btn-cont">
                             <div className="icon-cont">
                                 <svg viewBox="0 0 32 32" role="presentation" aria-hidden="true" focusable="false" style={{ display: 'block', fill: 'currentcolor', height: '18px', width: '18px' }}>
@@ -37,7 +42,7 @@ export default class SignUpLanding extends Component {
                             </div>
                         </div>
                     </a>
-                    <a href="https://1stwardym.com/auth/google" className="g-button">
+                    <a href={`${authBaseUrl}/auth/google`} className="g-button">
                         <div className="btn-cont">
                             <div className="icon-cont">
                                 <svg viewBox="0 0 18 18" role="presentation" aria-hidden="true" focusable="false" style={{ display: 'block', height: '18px', width: '18px' }}>

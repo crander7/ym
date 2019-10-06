@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 
 export default class LoginFail extends Component {
     render() {

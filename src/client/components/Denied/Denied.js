@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 
 export default class Denied extends Component {
     render() {

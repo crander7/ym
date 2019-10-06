@@ -115,12 +115,12 @@ export default class Home extends Component {
                     filterValGroup={this.state.filterValGroup}
                     resetFilter={this.state.resetFilter}
                     openError={this.openErrorDialog}
-                    // user={this.props.route.getUser()}
+                    // user={this.props.getUser()}
                     // addTags={this.openInputDialog}
                     // refresh={this.state.refresh}
                 />
                 <Drawer
-                    user={this.props.route.getUser()}
+                    user={this.props.getUser()}
                     page="home"
                     openDrawer={this.state.openDrawer}
                     handleFilterVal={this.handleFilterVal}
@@ -158,5 +158,5 @@ export default class Home extends Component {
 }
 
 Home.propTypes = {
-    route: PropTypes.object.isRequired
+    getUser: PropTypes.func.isRequired
 };

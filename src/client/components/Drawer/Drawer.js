@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import MDrawer from 'material-ui/Drawer';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { List, ListItem } from 'material-ui/List';
 import Add from 'material-ui/svg-icons/content/add-circle';
 import Tool from 'material-ui/svg-icons/action/build';

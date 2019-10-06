@@ -27,7 +27,7 @@ export default class CheckinRes extends Component {
         else this.setState({ error: true });
         setTimeout(() => {
             window.close();
-        }, 2000);
+        }, 1500);
     }
     render() {
         const { done, error, previous } = this.state;

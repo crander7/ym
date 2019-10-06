@@ -1,27 +1,11 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import Routes from './../../routes';
 import './App.scss';
 
-class App extends Component {
-    render() {
-        return (
-            <MuiThemeProvider>
-                <div>
-                    <div>
-                        {this.props.children}
-                    </div>
-                </div>
-            </MuiThemeProvider>
-        );
-    }
-}
 
-App.propTypes = {
-    children: PropTypes.oneOfType([
-        PropTypes.node,
-        PropTypes.arrayOf(PropTypes.node)
-    ]).isRequired
-};
-
-export default App;
+export default () => (
+    <MuiThemeProvider>
+        <Routes />
+    </MuiThemeProvider>
+);

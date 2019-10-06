@@ -61,10 +61,10 @@ export default class OldPosts extends Component {
                     filterValGroup={this.state.filterValGroup}
                     resetFilter={this.state.resetFilter}
                     openError={this.openErrorDialog}
-                    user={this.props.route.getUser()}
+                    user={this.props.getUser()}
                 />
                 <Drawer
-                    user={this.props.route.getUser()}
+                    user={this.props.getUser()}
                     openDrawer={this.state.openDrawer}
                     page="past"
                     handleFilterVal={this.handleFilterVal}
@@ -88,5 +88,5 @@ export default class OldPosts extends Component {
 }
 
 OldPosts.propTypes = {
-    route: PropTypes.object.isRequired
+    getUser: PropTypes.func.isRequired
 };

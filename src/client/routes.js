@@ -1,9 +1,8 @@
 import React from 'react';
-import { Router, IndexRoute, Route } from 'react-router';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import axios from 'axios';
 import Auth from './modules/auth';
 
-import App from './components/App/App';
 import Home from './components/Home/Home';
 import PostCreator from './components/AddPost/AddPost';
 import EditPosts from './components/EditPosts/EditPosts';
@@ -19,7 +18,7 @@ import LoginFail from './components/LoginFail/LoginFail';
 import NotFound from './components/NotFound/NotFound';
 import CheckinRes from './components/CheckinRes/CheckinRes';
 
-export default (props) => {
+export default () => {
     const checkAuth = async (nextState, replace, callback) => {
         const res = await axios({
             method: 'GET',
@@ -55,6 +54,7 @@ export default (props) => {
         }
     };
     const checkAdmin = async (nextState, replace, callback) => {
+        console.log('hit');
         const res = await axios({
             method: 'GET',
             url: `/auth/check4Token/${Auth.getToken()}`
@@ -72,11 +72,12 @@ export default (props) => {
         }
     };
     return (
-        <Router {...props}>
-            <Route path="/" component={App}>
-                <IndexRoute
-                    component={Home}
-                    getUser={Auth.isUserAuthenticated}
+        <Router>
+            <Switch>
+                <Route
+                    exact
+                    path="/"
+                    render={props => <Home {...getProps(props)} />}
                 />
                 <Route
                     path="/signup"
@@ -88,8 +89,7 @@ export default (props) => {
                 />
                 <Route
                     path="/pastActivities"
-                    component={OldPosts}
-                    getUser={Auth.isUserAuthenticated}
+                    render={props => <OldPosts {...getProps(props)} />}
                 />
                 <Route
                     path="/addPost"
@@ -128,9 +128,8 @@ export default (props) => {
                 />
                 <Route
                     path="/account"
-                    component={Account}
+                    render={props => <Account {...getProps(props)} />}
                     onEnter={checkAuth}
-                    getUser={Auth.isUserAuthenticated}
                 />
                 <Route
                     path="/admin"
@@ -140,9 +139,8 @@ export default (props) => {
                 />
                 <Route
                     path="/spam"
-                    component={Spam}
+                    render={props => <Spam {...getProps(props)} />}
                     onEnter={checkAdmin}
-                    getUser={Auth.isUserAuthenticated}
                 />
                 <Route
                     path="/logout"
@@ -163,7 +161,17 @@ export default (props) => {
                     path="*"
                     component={NotFound}
                 />
-            </Route>
+            </Switch>
         </Router>
     );
 };
+
+/**
+ * 
+ * @param {*} props route props
+ * @returns {*} object 
+ */
+function getProps(props) {
+    const newProps = Object.assign({}, props, { getUser: Auth.isUserAuthenticated });
+    return newProps;
+}

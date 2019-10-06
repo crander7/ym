@@ -96,7 +96,7 @@ export default class Spam extends Component {
                     </div>
                 </div>
                 <Drawer
-                    user={this.props.route.getUser()}
+                    user={this.props.getUser()}
                     openDrawer={this.state.openDrawer}
                     toggleDrawer={this.toggleDrawer}
                 />
@@ -106,5 +106,5 @@ export default class Spam extends Component {
 }
 
 Spam.propTypes = {
-    route: PropTypes.object.isRequired
+    getUser: PropTypes.func.isRequired
 };

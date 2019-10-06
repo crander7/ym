@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { Card, CardText } from 'material-ui/Card';
 import TextField from 'material-ui/TextField';
 import DatePicker from 'material-ui/DatePicker';
 import areIntlLocalesSupported from 'intl-locales-supported';
 import Icon from 'material-ui/svg-icons/navigation/close';
+
+const authBaseUrl = window.location.host.indexOf('localhost') === -1 ? 'https://1stwardym.com' : 'http://localhost:3000';
 
 const maxDate = new Date();
 maxDate.setFullYear(maxDate.getFullYear() - 12);
@@ -40,11 +42,11 @@ export default class SignUpForm extends Component {
                     </Link>
                     <div className="signup-head">
                         <span>Sign up with </span>
-                        <a href="https://1stwardym.com/auth/facebook" className="normalize-link link-color">
+                        <a href={`${authBaseUrl}/auth/facebook"`} className="normalize-link link-color">
                             Facebook
                         </a>
                         <span> or </span>
-                        <a href="https://1stwardym.com/auth/google" className="normalize-link link-color">
+                        <a href={`${authBaseUrl}/auth/google"`} className="normalize-link link-color">
                             Google
                         </a>
                     </div>
