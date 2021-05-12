@@ -20,7 +20,7 @@
     "jwt-decode": "^2.2.0",
     "konphyg": "^1.4.0",
     "material-ui": "^0.19.0",
-    "nodemailer": "^4.1.1",
+    "nodemailer": "^6.4.16",
     "passport": "^0.4.0",
     "passport-facebook": "^2.1.1",
     "passport-google-oauth": "^1.0.0",
